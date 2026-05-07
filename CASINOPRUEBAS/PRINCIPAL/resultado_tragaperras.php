@@ -16,13 +16,14 @@ $data = json_decode(file_get_contents("php://input"), true);
 if(isset($data['saveSaldo'])) {
     $newSaldo = floatval($data['newSaldo']);
     
-    // Limitar a saldo máximo para evitar exploits
+    // Limitar a saldo máximo para evitar exploits (máx 20% ganancia por sesión)
     $stmt = $conexion->prepare("SELECT saldo FROM usuarios WHERE id_usuario=?");
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
-    $maxSaldo = $user['saldo'] + 10000; // Máximo que puede ganar en una sesión
+    $initialSaldo = $user['saldo'];
+    $maxSaldo = $initialSaldo * 1.2; // Máximo 20% de ganancia
     
     if($newSaldo > 0 && $newSaldo <= $maxSaldo) {
         $stmt = $conexion->prepare("UPDATE usuarios SET saldo=? WHERE id_usuario=?");
@@ -30,8 +31,8 @@ if(isset($data['saveSaldo'])) {
         $stmt->execute();
         
         // Registrar transacción
-        $tipoTransaccion = $newSaldo > $user['saldo'] ? 'ganancia' : 'apuesta';
-        $monto = abs($newSaldo - $user['saldo']);
+        $tipoTransaccion = $newSaldo > $initialSaldo ? 'ganancia' : 'apuesta';
+        $monto = abs($newSaldo - $initialSaldo);
         
         $stmt = $conexion->prepare("INSERT INTO transacciones (id_usuario, tipo, monto) VALUES (?, ?, ?)");
         $stmt->bind_param("isd", $id_usuario, $tipoTransaccion, $monto);
@@ -42,7 +43,7 @@ if(isset($data['saveSaldo'])) {
     exit();
 }
 
-// Procesar tirada de tragaperras
+// Procesar tirada de tragaperras 3x3
 $bet = floatval($data['bet'] ?? 0);
 
 if($bet <= 0) {
@@ -50,100 +51,120 @@ if($bet <= 0) {
     exit();
 }
 
-// Símbolos del juego
-$symbols = ['🍎', '🍊', '🍋', '🍇', '💎', '👑', '7️⃣', '⭐'];
+// SÍMBOLOS CON PESOS REALISTAS
+$symbols = ['🍎', '🍊', '🍇', '⭐', '💎', '👑'];
 
-// Probabilidades ponderadas (multiplicador de aparición)
-$weightedSymbols = [];
+// Pesos (frecuencia de aparición) - MÁS BALANACEADOS
 $weights = [
-    '🍎' => 15,  // Muy común
-    '🍊' => 14,
-    '🍋' => 13,
-    '🍇' => 12,
-    '⭐' => 8,
-    '💎' => 5,
-    '👑' => 4,
-    '7️⃣' => 2   // Raro pero alto pago
+    '🍎' => 40,   // Muy común, poco paga
+    '🍊' => 35,   // Común
+    '🍇' => 30,   // Común
+    '⭐' => 20,   // Menos común
+    '💎' => 12,   // Raro
+    '👑' => 8     // Muy raro, paga mucho
 ];
 
+// Crear array ponderado
+$weightedSymbols = [];
 foreach($weights as $symbol => $weight) {
     for($i = 0; $i < $weight; $i++) {
         $weightedSymbols[] = $symbol;
     }
 }
 
-// Generar tirada
-$finalSymbols = [
-    $weightedSymbols[array_rand($weightedSymbols)],
-    $weightedSymbols[array_rand($weightedSymbols)],
-    $weightedSymbols[array_rand($weightedSymbols)]
+// GENERAR MATRIZ 3x3 (9 posiciones)
+$matrix = [];
+for($i = 0; $i < 9; $i++) {
+    $matrix[$i] = $weightedSymbols[array_rand($weightedSymbols)];
+}
+
+// DEFINIR LÍNEAS DE PAGO (9 líneas estándar)
+$payLines = [
+    [0, 1, 2],      // Línea superior
+    [3, 4, 5],      // Línea media
+    [6, 7, 8],      // Línea inferior
+    [0, 4, 8],      // Diagonal \
+    [2, 4, 6],      // Diagonal /
+    [1, 4, 7],      // Vertical centro
+    [0, 3, 6],      // Vertical izquierda
+    [2, 5, 8],      // Vertical derecha
+    [0, 1, 3, 4, 6, 7] // Combinación
 ];
 
-// Aumentar probabilidad de ganancias ocasionales (20% de probabilidad de ganancia)
-$randomChance = mt_rand(1, 100);
-if($randomChance <= 20) {
-    // Forzar al menos una ganancia
-    if($randomChance <= 10) {
-        // Doble (más común)
-        $matchSymbol = $weightedSymbols[array_rand($weightedSymbols)];
-        $finalSymbols[0] = $matchSymbol;
-        $finalSymbols[1] = $matchSymbol;
-    } else {
-        // Triple (raro)
-        $matchSymbol = $symbols[array_rand($symbols)];
-        $finalSymbols[0] = $matchSymbol;
-        $finalSymbols[1] = $matchSymbol;
-        $finalSymbols[2] = $matchSymbol;
+// TABLA DE PAGOS REALISTA
+$payTable = [
+    '👑' => ['three' => 25, 'two' => 3],
+    '💎' => ['three' => 20, 'two' => 2.5],
+    '⭐' => ['three' => 15, 'two' => 2],
+    '🍇' => ['three' => 10, 'two' => 1.5],
+    '🍊' => ['three' => 5, 'two' => 1],
+    '🍎' => ['three' => 3, 'two' => 0.5]
+];
+
+// PROCESAR LÍNEAS DE PAGO
+$totalWin = 0;
+$winMessage = '';
+$wins = [];
+
+foreach($payLines as $line) {
+    // Contar símbolos iguales en esta línea desde izquierda
+    $lineSymbols = [];
+    foreach($line as $pos) {
+        if($pos < 9) {
+            $lineSymbols[] = $matrix[$pos];
+        }
+    }
+    
+    // Verificar coincidencias (mínimo 2 símbolos iguales)
+    if(count($lineSymbols) >= 2) {
+        $firstSymbol = $lineSymbols[0];
+        $matchCount = 1;
+        
+        for($i = 1; $i < count($lineSymbols); $i++) {
+            if($lineSymbols[$i] === $firstSymbol) {
+                $matchCount++;
+            } else {
+                break;
+            }
+        }
+        
+        // Si hay coincidencia de 2 o 3
+        if($matchCount >= 2 && isset($payTable[$firstSymbol])) {
+            $payout = 0;
+            if($matchCount === 3) {
+                $payout = $bet * $payTable[$firstSymbol]['three'];
+                $wins[] = "Tres " . $firstSymbol;
+            } elseif($matchCount === 2) {
+                $payout = $bet * $payTable[$firstSymbol]['two'];
+                $wins[] = "Dos " . $firstSymbol;
+            }
+            
+            if($payout > 0) {
+                $totalWin += $payout;
+            }
+        }
     }
 }
 
-// Calcular ganancia
-$multipliers = [
-    '7️⃣' => ['triple' => 100, 'double' => 20],
-    '👑' => ['triple' => 80, 'double' => 15],
-    '💎' => ['triple' => 60, 'double' => 12],
-    '⭐' => ['triple' => 50, 'double' => 10],
-    '🍇' => ['triple' => 40, 'double' => 8],
-    '🍋' => ['triple' => 30, 'double' => 6],
-    '🍊' => ['triple' => 20, 'double' => 4],
-    '🍎' => ['triple' => 10, 'double' => 2]
-];
-
-$winAmount = 0;
-$bonus = 0;
-
-if($finalSymbols[0] === $finalSymbols[1] && $finalSymbols[1] === $finalSymbols[2]) {
-    // TRIPLE
-    $symbol = $finalSymbols[0];
-    $multiplier = $multipliers[$symbol]['triple'] ?? 1;
-    $winAmount = $bet * $multiplier;
-    
-    // Bonificación por triple (20% extra)
-    $bonus = $winAmount * 0.2;
-    
-} elseif($finalSymbols[0] === $finalSymbols[1] || $finalSymbols[1] === $finalSymbols[2]) {
-    // DOBLE
-    $symbol = ($finalSymbols[0] === $finalSymbols[1]) ? $finalSymbols[0] : $finalSymbols[2];
-    $multiplier = $multipliers[$symbol]['double'] ?? 1;
-    $winAmount = $bet * $multiplier;
-}
-
-// Jackpot especial (cada 500 giros aproximadamente)
-$jackpotRoll = mt_rand(1, 500);
-if($jackpotRoll === 1 && $finalSymbols[0] === $finalSymbols[1] && $finalSymbols[1] === $finalSymbols[2]) {
-    $bonus += $bet * 100; // 100x apuesta extra
+// Construir mensaje
+if($totalWin > 0) {
+    $winMessage = implode(', ', array_slice($wins, 0, 3));
+    if(count($wins) > 3) {
+        $winMessage .= " ¡y más!";
+    }
+} else {
+    $winMessage = "Sin combinaciones";
 }
 
 // Registrar apuesta
-$resultado = ($winAmount > 0) ? 'ganada' : 'perdida';
+$resultado = ($totalWin > 0) ? 'ganada' : 'perdida';
 $stmt = $conexion->prepare("INSERT INTO apuestas (id_usuario, id_juego, monto_apuesta, resultado) VALUES (?, 3, ?, ?)");
 $stmt->bind_param("ids", $id_usuario, $bet, $resultado);
 $stmt->execute();
 
 echo json_encode([
-    "symbols" => $finalSymbols,
-    "win" => $winAmount,
-    "bonus" => $bonus,
-    "total_win" => $winAmount + $bonus
+    "symbols" => $matrix,
+    "totalWin" => $totalWin,
+    "message" => $winMessage
 ]);
 ?>

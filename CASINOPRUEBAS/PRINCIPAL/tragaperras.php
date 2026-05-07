@@ -153,19 +153,20 @@ body {
 }
 
 .reel {
-    width: 90px;
-    height: 120px;
+    width: 100%;
+    aspect-ratio: 1;
     background: linear-gradient(90deg, #000, #1a1a1a, #000);
-    border: 3px solid #ffd700;
-    border-radius: 8px;
+    border: 2px solid #ffd700;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 60px;
+    font-size: 45px;
     font-weight: bold;
     position: relative;
     overflow: hidden;
     box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
+    min-width: 50px;
 }
 
 .reel.spinning {
@@ -410,6 +411,7 @@ body {
 @media (max-width: 480px) {
     .container {
         padding: 15px;
+        max-width: 95%;
     }
     
     .header h1 {
@@ -417,9 +419,11 @@ body {
     }
     
     .reel {
-        width: 70px;
-        height: 100px;
-        font-size: 45px;
+        font-size: 32px;
+    }
+    
+    .reels-container {
+        gap: 4px !important;
     }
     
     #spinBtn {
@@ -463,16 +467,16 @@ body {
     </div>
 
     <div class="slot-machine">
-        <div class="reels-container">
-            <div class="reel" id="reel1">
-                <div class="reel-symbol">🍎</div>
-            </div>
-            <div class="reel" id="reel2">
-                <div class="reel-symbol">🍎</div>
-            </div>
-            <div class="reel" id="reel3">
-                <div class="reel-symbol">🍎</div>
-            </div>
+        <div class="reels-container" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 8px;">
+            <div class="reel" id="reel0"><div class="reel-symbol">🍎</div></div>
+            <div class="reel" id="reel1"><div class="reel-symbol">🍎</div></div>
+            <div class="reel" id="reel2"><div class="reel-symbol">🍎</div></div>
+            <div class="reel" id="reel3"><div class="reel-symbol">🍎</div></div>
+            <div class="reel" id="reel4"><div class="reel-symbol">🍎</div></div>
+            <div class="reel" id="reel5"><div class="reel-symbol">🍎</div></div>
+            <div class="reel" id="reel6"><div class="reel-symbol">🍎</div></div>
+            <div class="reel" id="reel7"><div class="reel-symbol">🍎</div></div>
+            <div class="reel" id="reel8"><div class="reel-symbol">🍎</div></div>
         </div>
     </div>
 
@@ -504,30 +508,39 @@ body {
 </div>
 
 <script>
-// SÍMBOLOS DEL JUEGO
-const symbols = ['🍎', '🍊', '🍋', '🍇', '💎', '👑', '7️⃣', '⭐'];
+// SÍMBOLOS DEL JUEGO - TRAGAPERRAS 3x3 REALISTA
+const symbols = ['🍎', '🍊', '🍇', '⭐', '💎', '👑'];
 const symbolNames = {
     '🍎': 'Manzana',
     '🍊': 'Naranja',
-    '🍋': 'Limón',
     '🍇': 'Uva',
+    '⭐': 'Estrella',
     '💎': 'Diamante',
-    '👑': 'Corona',
-    '7️⃣': 'Siete',
-    '⭐': 'Estrella'
+    '👑': 'Corona'
 };
 
-// MULTIPLICADORES DE GANANCIA
-const multipliers = {
-    '7️⃣': { triple: 100, double: 20, single: 2 },
-    '👑': { triple: 80, double: 15, single: 1.5 },
-    '💎': { triple: 60, double: 12, single: 1.2 },
-    '⭐': { triple: 50, double: 10, single: 1 },
-    '🍇': { triple: 40, double: 8, single: 0.8 },
-    '🍋': { triple: 30, double: 6, single: 0.6 },
-    '🍊': { triple: 20, double: 4, single: 0.4 },
-    '🍎': { triple: 10, double: 2, single: 0.2 }
+// TABLA DE PAGOS REALISTA (multiplicador x apuesta)
+const payTable = {
+    '👑': { three: 25, two: 3 },    // Mayor pago
+    '💎': { three: 20, two: 2.5 },
+    '⭐': { three: 15, two: 2 },
+    '🍇': { three: 10, two: 1.5 },
+    '🍊': { three: 5, two: 1 },
+    '🍎': { three: 3, two: 0.5 }    // Menor pago
 };
+
+// 9 LÍNEAS DE PAGO (como tragaperras real 3x3)
+const payLines = [
+    [0, 1, 2],      // Línea 1: superior
+    [3, 4, 5],      // Línea 2: media
+    [6, 7, 8],      // Línea 3: inferior
+    [0, 4, 8],      // Línea 4: diagonal principal
+    [2, 4, 6],      // Línea 5: diagonal inversa
+    [1, 4, 7],      // Línea 6: vertical central
+    [0, 3, 6],      // Línea 7: vertical izq
+    [2, 5, 8],      // Línea 8: vertical der
+    [0, 1, 3, 4, 6, 7]  // Línea 9: esquinas
+];
 
 let credits = 0;
 let currentBet = 0;
@@ -593,9 +606,17 @@ async function spin() {
     credits -= currentBet;
     updateDisplay();
     
-    // ANIMAR RODILLOS
-    const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
-    const spins = [Math.floor(Math.random() * 20) + 15, Math.floor(Math.random() * 25) + 20, Math.floor(Math.random() * 30) + 25];
+    // ANIMAR RODILLOS 3x3
+    const reels = [];
+    for(let i = 0; i < 9; i++) {
+        reels.push(document.getElementById('reel' + i));
+    }
+    
+    // Animaciones con tiempos diferentes
+    const spins = [];
+    for(let i = 0; i < 9; i++) {
+        spins.push(Math.floor(Math.random() * (15 + i*2)) + 15);
+    }
     
     // Solicitar resultado al servidor
     const response = await fetch('resultado_tragaperras.php', {
@@ -607,13 +628,13 @@ async function spin() {
     const result = await response.json();
     const finalSymbols = result.symbols;
     
-    // Animar cada rodillo
-    for (let i = 0; i < 3; i++) {
+    // Animar cada posición
+    for (let i = 0; i < 9; i++) {
         animateSpin(reels[i], spins[i], finalSymbols[i]);
     }
     
     // Esperar a que terminen las animaciones
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 2500));
     
     // Procesar resultado
     processResult(finalSymbols, result);
@@ -642,47 +663,20 @@ function animateSpin(reel, spinCount, finalSymbol) {
 
 // PROCESAR RESULTADO
 function processResult(symbols, result) {
-    let multiplier = 0;
-    let resultType = 'lose';
-    let message = '';
-    
-    // Comprobar ganancia
-    if (symbols[0] === symbols[1] && symbols[1] === symbols[2]) {
-        // TRIPLE - JACKPOT
-        resultType = 'jackpot';
-        multiplier = multipliers[symbols[0]].triple;
-        message = `¡¡JACKPOT!! Tres ${symbolNames[symbols[0]]}s`;
-    } else if (symbols[0] === symbols[1] || symbols[1] === symbols[2]) {
-        // DOBLE - GANANCIA
-        resultType = 'win';
-        const matchedSymbol = symbols[0] === symbols[1] ? symbols[0] : symbols[2];
-        multiplier = multipliers[matchedSymbol].double;
-        message = `¡Dos ${symbolNames[matchedSymbol]}s! ¡Ganas!`;
-    } else {
-        // SIN MATCH
-        resultType = 'lose';
-        message = 'Intenta de nuevo';
-    }
+    let totalWin = result.totalWin || 0;
+    let resultType = totalWin > 0 ? 'win' : 'lose';
+    let message = result.message || 'Intenta de nuevo';
     
     // CALCULAR GANANCIA
-    let winAmount = 0;
     if (resultType !== 'lose') {
-        winAmount = currentBet * multiplier;
-        credits += winAmount;
-        
-        // Bonificación por múltiples ganancias consecutivas
-        if (result.bonus && result.bonus > 0) {
-            credits += result.bonus;
-            winAmount += result.bonus;
-            message += ` + ${result.bonus.toFixed(2)}€ BONIFICACIÓN`;
-        }
+        credits += totalWin;
     }
     
     // MOSTRAR RESULTADO
     const resultDiv = document.getElementById('result');
     document.getElementById('resultTitle').textContent = resultType === 'lose' ? '😢 Perdiste' : '🎉 ¡Ganaste!';
     document.getElementById('resultMessage').textContent = message;
-    document.getElementById('resultAmount').textContent = (resultType === 'lose' ? '-' : '+') + currentBet.toFixed(2) + '€';
+    document.getElementById('resultAmount').textContent = (resultType === 'lose' ? '-' : '+') + totalWin.toFixed(2) + '€';
     
     resultDiv.className = 'result visible ' + resultType;
     
