@@ -509,37 +509,33 @@ body {
 
 <script>
 // SÍMBOLOS DEL JUEGO - TRAGAPERRAS 3x3 REALISTA
-const symbols = ['🍎', '🍊', '🍇', '⭐', '💎', '👑'];
-const symbolNames = {
-    '🍎': 'Manzana',
-    '🍊': 'Naranja',
+const symbols = ['🍎', '🍊', '🍇', '⭐', '💎', '👑', '7️⃣'];
+const symbolNames = {    '🍎': 'Manzana',    '�': 'Naranja',
     '🍇': 'Uva',
     '⭐': 'Estrella',
     '💎': 'Diamante',
-    '👑': 'Corona'
+    '👑': 'Corona',
+    '7️⃣': 'Siete'
 };
 
-// TABLA DE PAGOS REALISTA (multiplicador x apuesta)
+// TABLA DE PAGOS (solo 3 iguales)
 const payTable = {
-    '👑': { three: 25, two: 3 },    // Mayor pago
-    '💎': { three: 20, two: 2.5 },
-    '⭐': { three: 15, two: 2 },
-    '🍇': { three: 10, two: 1.5 },
-    '🍊': { three: 5, two: 1 },
-    '🍎': { three: 3, two: 0.5 }    // Menor pago
+    '👑': 15,    // Corona - Mayor pago
+    '💎': 12,    // Diamante
+    '⭐': 9,     // Estrella
+    '7️⃣': 7,     // Siete
+    '🍇': 5,     // Uva
+    '🍊': 3,     // Naranja
+    '🍎': 2      // Manzana
 };
 
 // 9 LÍNEAS DE PAGO (como tragaperras real 3x3)
 const payLines = [
-    [0, 1, 2],      // Línea 1: superior
-    [3, 4, 5],      // Línea 2: media
-    [6, 7, 8],      // Línea 3: inferior
-    [0, 4, 8],      // Línea 4: diagonal principal
-    [2, 4, 6],      // Línea 5: diagonal inversa
-    [1, 4, 7],      // Línea 6: vertical central
-    [0, 3, 6],      // Línea 7: vertical izq
-    [2, 5, 8],      // Línea 8: vertical der
-    [0, 1, 3, 4, 6, 7]  // Línea 9: esquinas
+    [0, 1, 2],      // Fila horizontal superior
+    [3, 4, 5],      // Fila horizontal media
+    [6, 7, 8],      // Fila horizontal inferior
+    [0, 4, 8],      // Diagonal principal \
+    [2, 4, 6]       // Diagonal inversa /
 ];
 
 let credits = 0;
@@ -566,7 +562,21 @@ function startSession() {
     
     document.getElementById('popup').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'block';
+    
+    // Agregar listener para tecla Enter
+    document.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter' && sessionActive && !isSpinning) {
+            spin();
+        }
+    });
 }
+
+// Listener para Enter en el input inicial
+document.getElementById('sessionBudget').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        startSession();
+    }
+});
 
 // ACTUALIZAR DISPLAY
 function updateDisplay() {

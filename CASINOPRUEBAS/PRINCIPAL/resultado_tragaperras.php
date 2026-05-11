@@ -16,16 +16,14 @@ $data = json_decode(file_get_contents("php://input"), true);
 if(isset($data['saveSaldo'])) {
     $newSaldo = floatval($data['newSaldo']);
     
-    // Limitar a saldo máximo para evitar exploits (máx 20% ganancia por sesión)
+    // Guardar saldo sin límites de ganancia máxima
     $stmt = $conexion->prepare("SELECT saldo FROM usuarios WHERE id_usuario=?");
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
-    $initialSaldo = $user['saldo'];
-    $maxSaldo = $initialSaldo * 1.2; // Máximo 20% de ganancia
     
-    if($newSaldo > 0 && $newSaldo <= $maxSaldo) {
+    if($newSaldo > 0) {
         $stmt = $conexion->prepare("UPDATE usuarios SET saldo=? WHERE id_usuario=?");
         $stmt->bind_param("di", $newSaldo, $id_usuario);
         $stmt->execute();
@@ -52,16 +50,17 @@ if($bet <= 0) {
 }
 
 // SÍMBOLOS CON PESOS REALISTAS
-$symbols = ['🍎', '🍊', '🍇', '⭐', '💎', '👑'];
+$symbols = ['🍎', '🍊', '🍇', '⭐', '💎', '👑', '7️⃣'];
 
-// Pesos (frecuencia de aparición) - MÁS BALANACEADOS
+// Pesos (frecuencia de aparición)
 $weights = [
-    '🍎' => 40,   // Muy común, poco paga
-    '🍊' => 35,   // Común
-    '🍇' => 30,   // Común
-    '⭐' => 20,   // Menos común
-    '💎' => 12,   // Raro
-    '👑' => 8     // Muy raro, paga mucho
+    '�' => 45,   // Muy común, poco paga
+    '🍊' => 45,   // Muy común
+    '🍇' => 35,   // Común
+    '7️⃣' => 30,   // Común
+    '⭐' => 15,   // Menos común
+    '💎' => 8,    // Raro
+    '👑' => 5     // Muy raro, paga mucho
 ];
 
 // Crear array ponderado
@@ -78,27 +77,24 @@ for($i = 0; $i < 9; $i++) {
     $matrix[$i] = $weightedSymbols[array_rand($weightedSymbols)];
 }
 
-// DEFINIR LÍNEAS DE PAGO (9 líneas estándar)
+// DEFINIR LÍNEAS DE PAGO (solo filas horizontales + diagonales en X)
 $payLines = [
-    [0, 1, 2],      // Línea superior
-    [3, 4, 5],      // Línea media
-    [6, 7, 8],      // Línea inferior
-    [0, 4, 8],      // Diagonal \
-    [2, 4, 6],      // Diagonal /
-    [1, 4, 7],      // Vertical centro
-    [0, 3, 6],      // Vertical izquierda
-    [2, 5, 8],      // Vertical derecha
-    [0, 1, 3, 4, 6, 7] // Combinación
+    [0, 1, 2],      // Fila horizontal superior
+    [3, 4, 5],      // Fila horizontal media
+    [6, 7, 8],      // Fila horizontal inferior
+    [0, 4, 8],      // Diagonal principal \
+    [2, 4, 6]       // Diagonal inversa /
 ];
 
-// TABLA DE PAGOS REALISTA
+// TABLA DE PAGOS
 $payTable = [
-    '👑' => ['three' => 25, 'two' => 3],
-    '💎' => ['three' => 20, 'two' => 2.5],
-    '⭐' => ['three' => 15, 'two' => 2],
-    '🍇' => ['three' => 10, 'two' => 1.5],
-    '🍊' => ['three' => 5, 'two' => 1],
-    '🍎' => ['three' => 3, 'two' => 0.5]
+    '👑' => ['three' => 15, 'two' => 0],
+    '💎' => ['three' => 12, 'two' => 0],
+    '⭐' => ['three' => 9, 'two' => 0],
+    '7️⃣' => ['three' => 7, 'two' => 0],
+    '🍇' => ['three' => 5, 'two' => 0],
+    '🍊' => ['three' => 3, 'two' => 0],
+    '🍎' => ['three' => 2, 'two' => 0]
 ];
 
 // PROCESAR LÍNEAS DE PAGO
@@ -107,7 +103,7 @@ $winMessage = '';
 $wins = [];
 
 foreach($payLines as $line) {
-    // Contar símbolos iguales en esta línea desde izquierda
+    // Obtener símbolos en esta línea (3 posiciones cada línea)
     $lineSymbols = [];
     foreach($line as $pos) {
         if($pos < 9) {
@@ -115,29 +111,14 @@ foreach($payLines as $line) {
         }
     }
     
-    // Verificar coincidencias (mínimo 2 símbolos iguales)
-    if(count($lineSymbols) >= 2) {
+    // Verificar si TODOS los 3 símbolos son iguales
+    if(count($lineSymbols) === 3 && $lineSymbols[0] === $lineSymbols[1] && $lineSymbols[1] === $lineSymbols[2]) {
         $firstSymbol = $lineSymbols[0];
-        $matchCount = 1;
         
-        for($i = 1; $i < count($lineSymbols); $i++) {
-            if($lineSymbols[$i] === $firstSymbol) {
-                $matchCount++;
-            } else {
-                break;
-            }
-        }
-        
-        // Si hay coincidencia de 2 o 3
-        if($matchCount >= 2 && isset($payTable[$firstSymbol])) {
-            $payout = 0;
-            if($matchCount === 3) {
-                $payout = $bet * $payTable[$firstSymbol]['three'];
-                $wins[] = "Tres " . $firstSymbol;
-            } elseif($matchCount === 2) {
-                $payout = $bet * $payTable[$firstSymbol]['two'];
-                $wins[] = "Dos " . $firstSymbol;
-            }
+        // Solo pagar si hay 3 iguales (no se paga por 2)
+        if(isset($payTable[$firstSymbol])) {
+            $payout = $bet * $payTable[$firstSymbol]['three'];
+            $wins[] = "Tres " . $firstSymbol;
             
             if($payout > 0) {
                 $totalWin += $payout;
