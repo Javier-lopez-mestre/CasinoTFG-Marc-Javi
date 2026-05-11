@@ -1,18 +1,12 @@
 <?php
-// Datos de conexión
-$host = "localhost";
-$usuario = "casino_user";   // usuario que creamos para la web
-$password = "superlocal";    // contraseña del usuario
-$bd = "casino";             // nombre de la base de datos
+// Legacy wrapper para compatibilidad: muchos archivos usan $conexion.
+// Ahora delega en db.php.
 
-// Crear la conexión
-$conexion = new mysqli($host, $usuario, $password, $bd);
+declare(strict_types=1);
 
-// Verificar conexión
-if ($conexion->connect_error) {
-    die("Error de conexión a la base de datos: " . $conexion->connect_error);
-}
+require_once __DIR__ . '/db.php';
 
-// Opcional: establecer codificación UTF-8
-$conexion->set_charset("utf8");
+$conexion = db();
 ?>
+
+

@@ -544,6 +544,9 @@ const payLines = [
 
 let credits = 0;
 let currentBet = 0;
+
+// Evitar apuestas mayores que el saldo real del jugador en el frontend.
+// Regla: currentBet (apuesta) nunca puede exceder credits (saldo de sesión).
 let isSpinning = false;
 let sessionActive = false;
 const realSaldo = <?= $saldo ?>;
@@ -576,22 +579,38 @@ function updateDisplay() {
 
 // FIJAR APUESTA
 function setBet(amount) {
-    if (credits >= amount) {
-        currentBet = amount;
+    const maxAllowed = Math.min(credits, realSaldo);
+    const safeAmount = Number(amount);
+
+    if (!safeAmount || safeAmount <= 0) return;
+
+    if (safeAmount <= maxAllowed) {
+        currentBet = safeAmount;
         updateDisplay();
     } else {
-        alert('No tienes suficientes créditos');
+        alert('No puedes apostar más de tu saldo disponible');
+        currentBet = 0;
+        updateDisplay();
     }
 }
 
 // APUESTA PERSONALIZADA
 function setCustomBet() {
-    const amount = parseFloat(document.getElementById('customBetInput').value);
-    if (amount && amount > 0 && amount <= credits) {
+    const amount = Number(document.getElementById('customBetInput').value);
+    const maxAllowed = Math.min(credits, realSaldo);
+
+    if (!amount || amount <= 0) {
+        alert('Ingresa una apuesta válida');
+        return;
+    }
+
+    if (amount <= maxAllowed) {
         currentBet = amount;
         updateDisplay();
     } else {
-        alert('Ingresa una apuesta válida');
+        alert('No puedes apostar más de tu saldo disponible');
+        currentBet = 0;
+        updateDisplay();
     }
 }
 

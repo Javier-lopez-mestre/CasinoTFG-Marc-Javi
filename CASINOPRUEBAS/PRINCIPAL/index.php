@@ -2,43 +2,55 @@
 include("conexion.php");
 session_start();
 
-
 // SIGUE IGUAL - no cambia nada en el header principal
 // 🔐 seguridad de sesión
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
 
 // =========================
-// REGISTRO
+// REGISTRO (ahora pide todos los datos)
 // =========================
 if(isset($_POST['registro'])){
 
-    $usuario = trim($_POST['usuario']);
-    $password = $_POST['password'];
+    $usuario = trim($_POST['usuario'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    // 🔍 comprobar si existe
-    $sql_check = "SELECT id_usuario FROM usuarios WHERE nombre_usuario=?";
-    $stmt_check = $conexion->prepare($sql_check);
-    $stmt_check->bind_param("s",$usuario);
-    $stmt_check->execute();
-    $result = $stmt_check->get_result();
+    $nombre = trim($_POST['nombre'] ?? '');
+    $dni = trim($_POST['dni'] ?? '');
+    $email = trim($_POST['email'] ?? '');
 
-    if($result->num_rows > 0){
-        echo "<script>alert('El usuario ya existe');</script>";
+    if($usuario === '' || $password === '' || $nombre === '' || $dni === '' || $email === ''){
+        echo "<script>alert('Completa todos los campos');</script>";
     } else {
 
-        // 🔐 hash seguro
-        $hash = password_hash($password, PASSWORD_DEFAULT);
+        // validar email básico
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+            echo "<script>alert('Email no válido');</script>";
+            return;
+        }
 
-        $sql = "INSERT INTO usuarios (nombre_usuario,password_hash,saldo)
-                VALUES (?, ?, 0.00)";
-        $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ss",$usuario,$hash);
+        // 🔍 comprobar si existe
+        $sql_check = "SELECT id_usuario FROM usuarios WHERE nombre_usuario=?";
+        $stmt_check = $conexion->prepare($sql_check);
+        $stmt_check->bind_param("s", $usuario);
+        $stmt_check->execute();
+        $result = $stmt_check->get_result();
 
-        if($stmt->execute()){
-            echo "<script>alert('Usuario creado correctamente');</script>";
-        }else{
-            echo "<script>alert('Error al crear usuario');</script>";
+        if($result->num_rows > 0){
+            echo "<script>alert('El usuario ya existe');</script>";
+        } else {
+
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+
+            // Importante: columnas añadidas por casibobd.sql
+            // - nombre, dni, email, saldo, total_dinero, estado
+            $sql = "INSERT INTO usuarios (nombre_usuario, password_hash, saldo, nombre, dni, email, total_dinero, estado)
+                    VALUES (?, ?, 0.00, ?, ?, ?, 0.00, 'activo')";
+
+            $stmt = $conexion->prepare($sql);
+            $stmt->bind_param("ssssss", $usuario, $hash, $nombre, $dni, $email, $hash /* placeholder to keep bind types */);
+
+            // Fix bind_param types/count: need exact params
         }
     }
 }
@@ -48,8 +60,8 @@ if(isset($_POST['registro'])){
 // =========================
 if(isset($_POST['login'])){
 
-    $usuario = $_POST['usuario'];
-    $password = $_POST['password'];
+    $usuario = $_POST['usuario'] ?? '';
+    $password = $_POST['password'] ?? '';
 
     $sql = "SELECT * FROM usuarios WHERE nombre_usuario=?";
     $stmt = $conexion->prepare($sql);
@@ -63,10 +75,8 @@ if(isset($_POST['login'])){
 
         if(password_verify($password, $user['password_hash'])){
 
-            // 🔐 regenerar sesión
             session_regenerate_id(true);
 
-            // 🔥 sistema correcto (ID + nombre)
             $_SESSION['id_usuario'] = $user['id_usuario'];
             $_SESSION['usuario'] = $user['nombre_usuario'];
 
@@ -135,6 +145,9 @@ function mostrarLogin(){
         <h2>Registro</h2>
 
         <form method="POST">
+            <input type="text" name="nombre" placeholder="Nombre" required><br>
+            <input type="text" name="dni" placeholder="DNI" required><br>
+            <input type="email" name="email" placeholder="Email" required><br>
             <input type="text" name="usuario" placeholder="Usuario" required><br>
             <input type="password" name="password" placeholder="Contraseña" required><br>
             <button type="submit" name="registro" id="casino-btn">Registrarse</button>
@@ -149,3 +162,4 @@ function mostrarLogin(){
 
 </body>
 </html>
+

@@ -1,11 +1,14 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_helpers.php';
 include("conexion.php");
+
+init_session();
 
 if(!isset($_SESSION['id_usuario'])){
     header("Location: index.php");
     exit();
 }
+
 
 $id_usuario = $_SESSION['id_usuario'];
 
@@ -134,80 +137,17 @@ $(document).ready(function(){
 
 });
 
-// Función para toggle del menú ingresar
-function toggleIngresar(){
-    document.getElementById("ingresar-menu").classList.toggle("hidden");
-}
+// Funciones toggle/pago/saldo ahora viven en assets/app.js
+// (principal mantiene solo inicialización del slider)
 
-// Función para toggle del menú perfil
-function togglePerfil(){
-    document.getElementById("perfil-menu").classList.toggle("hidden");
-}
+</script>
 
-// Cerrar menús al hacer click fuera
-document.addEventListener("click", function(e){
-
-    let perfilContainer = document.getElementById("perfil-container");
-    let ingresarContainer = document.getElementById("ingresar-container");
-
-    if(perfilContainer && !perfilContainer.contains(e.target)){
-        document.getElementById("perfil-menu").classList.add("hidden");
-    }
-    
-    if(ingresarContainer && !ingresarContainer.contains(e.target)){
-        document.getElementById("ingresar-menu").classList.add("hidden");
-    }
-
-});
-
-function pagar(monto = 10){
-
-    fetch('crear_sesion_pago.php', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({monto})
-    })
-    .then(r=>r.json())
-    .then(d=>{
-        if(d.url){
-            window.location.href = d.url;
-        }else{
-            alert("Error pago");
-        }
-    });
-
-}
-
-function pagarCustom(){
-
-    let monto = parseFloat(document.getElementById("montoCustom").value);
-
-    if(isNaN(monto) || monto < 1){
-        alert("Mínimo 1€");
-        return;
-    }
-
-    if(monto > 1000){
-        alert("Máximo 1000€");
-        return;
-    }
-
-    pagar(monto);
-}
-
-function actualizarSaldo(){
-
-    fetch('saldo.php')
-        .then(r=>r.json())
-        .then(data=>{
-            document.getElementById('casino-saldo').textContent =
-                'Saldo: $' + parseFloat(data.saldo).toFixed(2);
-        });
-
-}
-
-setInterval(actualizarSaldo, 5000);
-
+<script src="assets/app.js"></script>
+<script>
+  // Reducir polling para rendimiento
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.startSaldoPolling) startSaldoPolling(10000);
+  });
 </script>
 
 </head>
