@@ -289,23 +289,23 @@ $(document).ready(function(){
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
         <div onclick="window.location.href='juego1.php'" class="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-105 transition-all duration-200">
-            <img src="img/pigbank.png" class="w-full h-56 object-cover">
-            <div class="p-5 text-center font-black">BIGBANK</div>
+            <img src="img/blackjack.png" class="w-full h-56 object-cover">
+            <div class="p-5 text-center font-black">BLACKJACK</div>
         </div>
 
         <div onclick="window.location.href='tragaperras.php'" class="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-105 transition-all duration-200">
             <img src="img/777.png" class="w-full h-56 object-cover">
-            <div class="p-5 text-center font-black">🎰 TRAGAPERRAS</div>
+            <div class="p-5 text-center font-black">STUNNINGSTONES</div>
         </div>
 
         <div onclick="window.location.href='minas.php'" class="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-105 transition-all duration-200">
-            <img src="img/777.png" class="w-full h-56 object-cover">
-            <div class="p-5 text-center font-black">Juego 3</div>
+            <img src="img/mines.png" class="w-full h-56 object-cover">
+            <div class="p-5 text-center font-black">MINES V3</div>
         </div>
 
-        <div onclick="window.location.href='juego4.php'" class="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-105 transition-all duration-200">
+        <div onclick="window.location.href='ruleta.php'" class="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-105 transition-all duration-200">
             <img src="img/frog.png" class="w-full h-56 object-cover">
-            <div class="p-5 text-center font-black">Juego 4</div>
+            <div class="p-5 text-center font-black">FIRE BLAZE</div>
         </div>
 
     </section>
