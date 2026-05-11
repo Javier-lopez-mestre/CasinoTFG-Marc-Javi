@@ -2,6 +2,8 @@
 include("conexion.php");
 session_start();
 
+
+// SIGUE IGUAL - no cambia nada en el header principal
 // 🔐 seguridad de sesión
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
