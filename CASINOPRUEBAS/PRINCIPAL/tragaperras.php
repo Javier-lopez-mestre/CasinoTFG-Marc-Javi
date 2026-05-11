@@ -2,17 +2,19 @@
 session_start();
 include("conexion.php");
 
-if(!isset($_SESSION['id_usuario'])){
-    header("Location: index.php");
+if (!isset($_SESSION['id_usuario'])) {
+    header("Location:index.php");
     exit();
 }
 
-$id = $_SESSION['id_usuario'];
+$id = (int) $_SESSION['id_usuario'];
 
-$stmt = $conexion->prepare("SELECT saldo FROM usuarios WHERE id_usuario=?");
-$stmt->bind_param("i",$id);
+$stmt = $conexion->prepare("SELECT saldo FROM usuarios WHERE id_usuario = ?");
+$stmt->bind_param("i", $id);
 $stmt->execute();
-$saldo = $stmt->get_result()->fetch_assoc()['saldo'];
+
+$row = $stmt->get_result()->fetch_assoc();
+$saldo = isset($row['saldo']) ? (float) $row['saldo'] : 0;
 ?>
 
 <!DOCTYPE html>
@@ -20,729 +22,744 @@ $saldo = $stmt->get_result()->fetch_assoc()['saldo'];
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tragaperras Pro</title>
+
+<title>Tragaperras</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: 'Arial Black', Arial, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+    background: radial-gradient(circle at top, #3b0764, #020617 70%);
 }
 
-/* BOTÓN VOLVER */
-#backBtn {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 9999;
-    padding: 12px 16px;
-    border-radius: 8px;
-    border: 2px solid #ffd700;
-    background: #222;
-    color: #ffd700;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    transition: 0.3s;
+.session-counter {
+    background: linear-gradient(45deg, #10b981, #059669);
+    box-shadow: 0 10px 30px rgba(16,185,129,0.4);
 }
 
-#backBtn:hover {
-    background: #ffd700;
-    color: #222;
-}
-
-/* CONTENEDOR PRINCIPAL */
-.container {
-    width: 90%;
-    max-width: 600px;
-    background: radial-gradient(circle at 30% 30%, #2a2a4e, #1a1a2e);
-    border: 3px solid #ffd700;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 215, 0, 0.2);
-    animation: glow 2s ease-in-out infinite;
-}
-
-@keyframes glow {
-    0%, 100% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 215, 0, 0.2); }
-    50% { box-shadow: 0 0 80px rgba(255, 215, 0, 0.8), 0 0 120px rgba(255, 215, 0, 0.4); }
-}
-
-/* HEADER */
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.header h1 {
-    font-size: 48px;
-    color: #ffd700;
-    text-shadow: 0 0 10px #ffd700, 0 0 20px #ff6b00;
-    margin-bottom: 10px;
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.header p {
-    color: #aaa;
-    font-size: 14px;
-}
-
-/* INFO SALDO */
-.info-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.info-box {
-    background: rgba(255, 215, 0, 0.1);
-    border: 2px solid #ffd700;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    border-radius: 8px;
-}
-
-.info-box label {
-    display: block;
-    color: #aaa;
-    font-size: 12px;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-
-.info-box .value {
-    font-size: 28px;
-    color: #ffd700;
-    font-weight: bold;
-}
-
-/* RODILLOS */
 .slot-machine {
-    background: linear-gradient(145deg, #0a0a0a, #1a1a2e);
-    border: 3px solid #ff6b00;
-    border-radius: 15px;
-    padding: 20px;
-    margin: 25px 0;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 107, 0, 0.3);
-}
-
-.reels-container {
-    display: flex;
-    justify-content: space-around;
-    gap: 10px;
-    margin-bottom: 20px;
+    background: linear-gradient(180deg, #991b1b, #450a0a);
+    box-shadow: 0 0 60px rgba(250,204,21,0.35);
 }
 
 .reel {
-    width: 100%;
-    aspect-ratio: 1;
-    background: linear-gradient(90deg, #000, #1a1a1a, #000);
-    border: 2px solid #ffd700;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 45px;
-    font-weight: bold;
-    position: relative;
-    overflow: hidden;
-    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
-    min-width: 50px;
+    background: linear-gradient(180deg, #ffffff, #d4d4d8);
+    color: #111827;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.35);
 }
 
 .reel.spinning {
-    animation: spin 0.1s linear;
+    animation: reelSpin 0.12s linear infinite;
 }
 
-@keyframes spin {
-    0% { transform: translateY(-20px); }
-    100% { transform: translateY(20px); }
+@keyframes reelSpin {
+    0% {
+        transform: translateY(-6px) scale(1.02);
+        filter: blur(1px);
+    }
+
+    50% {
+        transform: translateY(6px) scale(1.04);
+        filter: blur(2px);
+    }
+
+    100% {
+        transform: translateY(-6px) scale(1.02);
+        filter: blur(1px);
+    }
 }
 
-.reel-symbol {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease-out;
+.glow-win {
+    animation: glowWin 1s ease-in-out infinite alternate;
 }
 
-/* BOTÓN JUGAR */
-.controls {
-    text-align: center;
-}
-
-.bet-amount {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-.chip-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid #ffd700;
-    background: radial-gradient(circle, #ff6b00, #cc5500);
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.3s;
-    box-shadow: 0 4px 10px rgba(255, 107, 0, 0.3);
-}
-
-.chip-btn:hover:not(:disabled) {
-    transform: scale(1.1);
-    box-shadow: 0 6px 15px rgba(255, 107, 0, 0.6);
-}
-
-.chip-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.custom-bet {
-    display: flex;
-    gap: 5px;
-    justify-content: center;
-    margin-bottom: 15px;
-}
-
-.custom-bet input {
-    width: 80px;
-    padding: 8px;
-    border: 2px solid #ffd700;
-    border-radius: 5px;
-    background: #1a1a2e;
-    color: #ffd700;
-    font-weight: bold;
-    text-align: center;
-}
-
-.custom-bet button {
-    padding: 8px 15px;
-    background: #ffd700;
-    color: #000;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.custom-bet button:hover {
-    background: #ffed4e;
-}
-
-#spinBtn {
-    width: 100%;
-    padding: 15px;
-    font-size: 20px;
-    font-weight: bold;
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    color: #000;
-    border: 3px solid #000;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-}
-
-#spinBtn:hover:not(:disabled) {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
-}
-
-#spinBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* RESULTADO */
-.result {
-    background: rgba(255, 215, 0, 0.1);
-    border: 2px solid #ffd700;
-    border-radius: 10px;
-    padding: 15px;
-    margin-top: 20px;
-    text-align: center;
-    display: none;
-    animation: slideIn 0.5s ease-out;
-}
-
-@keyframes slideIn {
+@keyframes glowWin {
     from {
-        opacity: 0;
-        transform: translateY(-20px);
+        box-shadow: 0 0 30px rgba(34,197,94,0.5);
     }
+
     to {
-        opacity: 1;
-        transform: translateY(0);
+        box-shadow: 0 0 80px rgba(34,197,94,1);
     }
 }
 
-.result.visible {
-    display: block;
+.glow-loss {
+    animation: glowLoss 1s ease-in-out infinite alternate;
 }
 
-.result.win {
-    border-color: #00ff00;
-    background: rgba(0, 255, 0, 0.1);
-}
-
-.result.lose {
-    border-color: #ff4444;
-    background: rgba(255, 68, 68, 0.1);
-}
-
-.result.jackpot {
-    border-color: #ff6b00;
-    background: rgba(255, 107, 0, 0.2);
-    animation: jackpotFlash 0.5s infinite;
-}
-
-@keyframes jackpotFlash {
-    0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 0, 0.5); }
-    50% { box-shadow: 0 0 40px rgba(255, 107, 0, 1); }
-}
-
-.result h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.result .amount {
-    font-size: 32px;
-    font-weight: bold;
-    color: #ffd700;
-}
-
-/* POPUP CONFIGURACIÓN */
-#popup {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-}
-
-.popup-box {
-    background: radial-gradient(circle at 30% 30%, #2a2a4e, #1a1a2e);
-    border: 3px solid #ffd700;
-    border-radius: 15px;
-    padding: 30px;
-    width: 90%;
-    max-width: 350px;
-    box-shadow: 0 0 50px rgba(255, 215, 0, 0.4);
-}
-
-.popup-box h3 {
-    color: #ffd700;
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: 24px;
-}
-
-.popup-box input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 2px solid #ffd700;
-    border-radius: 8px;
-    background: #1a1a2e;
-    color: #ffd700;
-    font-weight: bold;
-    font-size: 16px;
-}
-
-.popup-box button {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.popup-box button:hover {
-    transform: scale(1.02);
-}
-
-.saldo-real {
-    text-align: center;
-    color: #aaa;
-    font-size: 13px;
-    margin-bottom: 15px;
-    padding: 10px;
-    background: rgba(255, 215, 0, 0.05);
-    border-radius: 5px;
-}
-
-/* RESPONSIVO */
-@media (max-width: 480px) {
-    .container {
-        padding: 15px;
-        max-width: 95%;
+@keyframes glowLoss {
+    from {
+        box-shadow: 0 0 30px rgba(239,68,68,0.5);
     }
-    
-    .header h1 {
-        font-size: 36px;
-    }
-    
-    .reel {
-        font-size: 32px;
-    }
-    
-    .reels-container {
-        gap: 4px !important;
-    }
-    
-    #spinBtn {
-        padding: 12px;
-        font-size: 16px;
+
+    to {
+        box-shadow: 0 0 80px rgba(239,68,68,1);
     }
 }
 </style>
 </head>
 
-<body>
+<body class="min-h-screen text-white overflow-x-hidden">
 
-<button id="backBtn" onclick="exitGame()">🏠 Volver al Casino</button>
+<div class="fixed inset-0 bg-black/40"></div>
 
-<!-- POPUP INICIAL -->
-<div id="popup">
-    <div class="popup-box">
-        <h3>🎰 Tragaperras</h3>
-        <p class="saldo-real">Saldo disponible: <strong><?= $saldo ?>€</strong></p>
-        <input type="number" id="sessionBudget" placeholder="Presupuesto sesión (€)" min="1" max="<?= $saldo ?>">
-        <button onclick="startSession()">Empezar a Jugar</button>
+<!-- HEADER DE SESIÓN -->
+<header class="fixed top-0 left-0 w-full h-20 bg-black/70 backdrop-blur-md px-4 z-50 flex flex-col sm:flex-row items-center justify-between gap-2 pt-2">
+    <div class="flex items-center gap-2">
+        <button onclick="goHome()" class="bg-black border border-white px-4 py-2 rounded-xl hover:bg-white hover:text-black transition font-bold">
+            🏠 Principal
+        </button>
+
+        <div id="sessionCounter" class="session-counter px-4 py-2 rounded-2xl text-lg font-black hidden">
+            ⏱️ <span id="sessionTime">00:00</span> |
+            💰 Sesión: <span id="sessionBankroll">$0</span> |
+            <span id="sessionBetLimit">Disponible: $0</span>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-2 header-buttons">
+        <button id="endSessionBtn" onclick="endSession()" 
+                class="bg-red-500 hover:bg-red-400 px-4 py-2 rounded-xl font-bold text-lg transition shadow-lg hidden">
+            TERMINAR SESIÓN
+        </button>
+    </div>
+
+    <div class="bg-yellow-400 text-black px-5 py-2 rounded-2xl font-black text-lg shadow-2xl">
+        💰 Cuenta: <span id="saldoHeader"><?= number_format($saldo, 2) ?></span>$
+    </div>
+</header>
+
+<!-- ALERTA -->
+<div id="casinoAlert" class="hidden fixed top-24 left-1/2 -translate-x-1/2 z-[99999] bg-red-500 text-white px-6 py-3 rounded-2xl text-xl font-bold shadow-2xl text-center"></div>
+
+<!-- PANTALLA INICIO SESIÓN -->
+<div id="startScreen" class="fixed inset-0 bg-black/95 z-[99999] flex items-center justify-center">
+    <div class="bg-zinc-900 border-4 border-yellow-400 rounded-3xl p-8 w-[90%] max-w-md text-center shadow-2xl">
+        <div class="text-5xl font-black text-yellow-400 mb-6">🎰 TRAGAPERRAS</div>
+
+        <p class="text-zinc-400 mb-2 text-lg">Saldo disponible en cuenta:</p>
+
+        <div class="text-4xl font-black mb-6 text-green-400">
+            <?= number_format($saldo, 2) ?>$
+        </div>
+        
+        <input id="bankroll" type="number" placeholder="Dinero para la sesión" min="1" max="<?= htmlspecialchars((string) $saldo) ?>"
+               class="w-full bg-zinc-800 rounded-xl p-4 mb-4 text-white outline-none border-2 border-zinc-700 focus:border-yellow-400 text-2xl text-center font-bold">
+        
+        <select id="time" class="w-full bg-zinc-800 rounded-xl p-4 mb-6 text-white border-2 border-zinc-700 text-xl font-bold">
+            <option value="1800">⏱️ 30 minutos</option>
+            <option value="3600">⏱️ 1 hora</option>
+            <option value="7200">⏱️ 2 horas</option>
+        </select>
+        
+        <button onclick="confirmSession()" class="w-full bg-green-500 hover:bg-green-400 py-5 rounded-2xl text-2xl font-black transition shadow-2xl">
+            🚀 COMENZAR SESIÓN
+        </button>
     </div>
 </div>
 
 <!-- JUEGO -->
-<div class="container" style="display: none;" id="gameContainer">
-    <div class="header">
-        <h1>🎰 TRAGAPERRAS</h1>
-        <p>¡Gira los rodillos y gana increíbles premios!</p>
-    </div>
+<main id="gameTable" class="relative z-10 min-h-screen pt-28 px-4 pb-10 hidden">
 
-    <div class="info-container">
-        <div class="info-box">
-            <label>Créditos</label>
-            <div class="value" id="credits">0€</div>
+    <section class="max-w-5xl mx-auto text-center">
+
+        <h1 class="text-5xl md:text-7xl font-black text-yellow-400 mb-8 drop-shadow-2xl">
+            🎰 TRAGAPERRAS
+        </h1>
+
+        <div id="slotMachine" class="slot-machine border-8 border-yellow-400 rounded-[2rem] p-6 md:p-10 max-w-4xl mx-auto">
+
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div id="reel1" class="reel rounded-3xl h-36 md:h-48 flex items-center justify-center text-7xl md:text-9xl font-black">
+                    🍒
+                </div>
+
+                <div id="reel2" class="reel rounded-3xl h-36 md:h-48 flex items-center justify-center text-7xl md:text-9xl font-black">
+                    🍋
+                </div>
+
+                <div id="reel3" class="reel rounded-3xl h-36 md:h-48 flex items-center justify-center text-7xl md:text-9xl font-black">
+                    🔔
+                </div>
+            </div>
+
+            <div id="resultText" class="h-16 text-3xl md:text-4xl font-black mb-6 text-yellow-400"></div>
+
+            <div class="bg-black/50 rounded-3xl p-6 max-w-md mx-auto mb-6">
+                <label class="block text-zinc-300 font-bold mb-2 text-xl">
+                    Apuesta
+                </label>
+
+                <input id="betInput" type="number" min="0.5" step="0.5" value="1"
+                       class="w-full bg-zinc-900 border-2 border-yellow-400 rounded-2xl p-4 text-center text-3xl font-black outline-none text-white">
+
+                <p id="availableText" class="text-zinc-400 mt-3 font-bold">
+                    Disponible: $0
+                </p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <button onclick="setBet(0.5)" class="bg-white text-black px-5 py-3 rounded-xl font-black hover:scale-105 transition">$0.5</button>
+                <button onclick="setBet(1)" class="bg-yellow-300 text-black px-5 py-3 rounded-xl font-black hover:scale-105 transition">$1</button>
+                <button onclick="setBet(2)" class="bg-green-500 text-white px-5 py-3 rounded-xl font-black hover:scale-105 transition">$2</button>
+                <button onclick="setBet(5)" class="bg-blue-500 text-white px-5 py-3 rounded-xl font-black hover:scale-105 transition">$5</button>
+                <button onclick="setBet(10)" class="bg-red-500 text-white px-5 py-3 rounded-xl font-black hover:scale-105 transition">$10</button>
+                <button onclick="setMaxBet()" class="bg-purple-500 text-white px-5 py-3 rounded-xl font-black hover:scale-105 transition">MAX</button>
+            </div>
+
+            <button id="spinBtn" onclick="spin()" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black px-16 py-6 rounded-3xl text-4xl font-black shadow-2xl transition disabled:opacity-50 disabled:cursor-not-allowed">
+                GIRAR 🎰
+            </button>
+
         </div>
-        <div class="info-box">
-            <label>Apuesta</label>
-            <div class="value" id="bet">0€</div>
-        </div>
-    </div>
 
-    <div class="slot-machine">
-        <div class="reels-container" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 8px;">
-            <div class="reel" id="reel0"><div class="reel-symbol">🍎</div></div>
-            <div class="reel" id="reel1"><div class="reel-symbol">🍎</div></div>
-            <div class="reel" id="reel2"><div class="reel-symbol">🍎</div></div>
-            <div class="reel" id="reel3"><div class="reel-symbol">🍎</div></div>
-            <div class="reel" id="reel4"><div class="reel-symbol">🍎</div></div>
-            <div class="reel" id="reel5"><div class="reel-symbol">🍎</div></div>
-            <div class="reel" id="reel6"><div class="reel-symbol">🍎</div></div>
-            <div class="reel" id="reel7"><div class="reel-symbol">🍎</div></div>
-            <div class="reel" id="reel8"><div class="reel-symbol">🍎</div></div>
-        </div>
-    </div>
+        <div class="mt-8 bg-black/50 rounded-3xl p-6 max-w-3xl mx-auto border border-yellow-400/30">
+            <h2 class="text-2xl font-black text-yellow-400 mb-4">Tabla de premios</h2>
 
-    <div class="controls">
-        <div class="bet-amount">
-            <button class="chip-btn" onclick="setBet(0.2)">0.2€</button>
-            <button class="chip-btn" onclick="setBet(0.3)">0.3€</button>
-            <button class="chip-btn" onclick="setBet(0.5)">0.5€</button>
-            <button class="chip-btn" onclick="setBet(0.6)">0.6€</button>
-            <button class="chip-btn" onclick="setBet(1)">1€</button>
-            <button class="chip-btn" onclick="setBet(2)">2€</button>
-            <button class="chip-btn" onclick="setBet(5)">5€</button>
-            <button class="chip-btn" onclick="setBet(10)">10€</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-left text-lg">
+                <div>🍒 🍒 🍒 = x2</div>
+                <div>🍋 🍋 🍋 = x3</div>
+                <div>🔔 🔔 🔔 = x5</div>
+                <div>💎 💎 💎 = x10</div>
+                <div>7️⃣ 7️⃣ 7️⃣ = x20</div>
+                <div>⭐ ⭐ ⭐ = x50</div>
+            </div>
         </div>
 
-        <div class="custom-bet">
-            <input type="number" id="customBetInput" placeholder="Cantidad" min="0.2" step="0.1">
-            <button onclick="setCustomBet()">Fijar</button>
-        </div>
+    </section>
 
-        <button id="spinBtn" onclick="spin()" disabled>GIRAR - Presiona para jugar</button>
-    </div>
-
-    <div class="result" id="result">
-        <h3 id="resultTitle">Resultado</h3>
-        <p id="resultMessage"></p>
-        <div class="amount" id="resultAmount">+0€</div>
-    </div>
-</div>
+</main>
 
 <script>
-// SÍMBOLOS DEL JUEGO - TRAGAPERRAS 3x3 REALISTA
-const symbols = ['🍎', '🍊', '🍇', '⭐', '💎', '👑', '7️⃣'];
-const symbolNames = {    '🍎': 'Manzana',    '�': 'Naranja',
-    '🍇': 'Uva',
-    '⭐': 'Estrella',
-    '💎': 'Diamante',
-    '👑': 'Corona',
-    '7️⃣': 'Siete'
-};
+let saldo = <?= (float) $saldo ?>;
 
-// TABLA DE PAGOS (solo 3 iguales)
-const payTable = {
-    '👑': 15,    // Corona - Mayor pago
-    '💎': 12,    // Diamante
-    '⭐': 9,     // Estrella
-    '7️⃣': 7,     // Siete
-    '🍇': 5,     // Uva
-    '🍊': 3,     // Naranja
-    '🍎': 2      // Manzana
-};
-
-// 9 LÍNEAS DE PAGO (como tragaperras real 3x3)
-const payLines = [
-    [0, 1, 2],      // Fila horizontal superior
-    [3, 4, 5],      // Fila horizontal media
-    [6, 7, 8],      // Fila horizontal inferior
-    [0, 4, 8],      // Diagonal principal \
-    [2, 4, 6]       // Diagonal inversa /
-];
-
-let credits = 0;
-let currentBet = 0;
-
-// Evitar apuestas mayores que el saldo real del jugador en el frontend.
-// Regla: currentBet (apuesta) nunca puede exceder credits (saldo de sesión).
-let isSpinning = false;
 let sessionActive = false;
-const realSaldo = <?= $saldo ?>;
+let sessionBankroll = 0;
+let sessionBetLimit = 0;
+let sessionTimer = null;
+let sessionExpiresAt = 0;
+let sessionExpiredAlertShown = false;
 
-// INICIAR SESIÓN
-function startSession() {
-    const budget = parseFloat(document.getElementById('sessionBudget').value);
-    
-    if (!budget || budget <= 0 || budget > realSaldo) {
-        alert('Por favor, ingresa un presupuesto válido');
+let spinning = false;
+
+const symbols = ["🍒", "🍋", "🔔", "💎", "7️⃣", "⭐", "🍉", "🍇"];
+
+const payoutTable = {
+    "🍒": 2,
+    "🍋": 3,
+    "🔔": 5,
+    "💎": 10,
+    "7️⃣": 20,
+    "⭐": 50
+};
+
+// ==================== API SESIÓN ====================
+async function gameSessionApi(action, data = {}) {
+    const response = await fetch(`api_sesion_juego.php?action=${action}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    return await response.json();
+}
+
+function applySessionState(data) {
+    if (!data.ok) {
+        showAlert(data.message || "Error de sesión");
         return;
     }
-    
-    credits = budget;
+
+    saldo = Number(data.saldo_cuenta || 0);
+    updateSaldo();
+
+    if (!data.active) {
+        sessionActive = false;
+        sessionBankroll = 0;
+        sessionBetLimit = 0;
+        sessionExpiresAt = 0;
+        sessionExpiredAlertShown = false;
+
+        document.getElementById("startScreen").style.display = "flex";
+        document.getElementById("gameTable").classList.add("hidden");
+        document.getElementById("sessionCounter").classList.add("hidden");
+        document.getElementById("endSessionBtn").classList.add("hidden");
+
+        clearInterval(sessionTimer);
+        sessionTimer = null;
+
+        return;
+    }
+
     sessionActive = true;
-    updateDisplay();
-    
-    document.getElementById('popup').style.display = 'none';
-    document.getElementById('gameContainer').style.display = 'block';
-    
-    // Agregar listener para tecla Enter
-    document.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter' && sessionActive && !isSpinning) {
-            spin();
-        }
-    });
-}
+    sessionBankroll = Number(data.saldo_sesion || 0);
+    sessionBetLimit = Number(data.max_apuesta || data.saldo_sesion || 0);
+    sessionExpiresAt = Number(data.expires_at || 0);
 
-// Listener para Enter en el input inicial
-document.getElementById('sessionBudget').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        startSession();
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("gameTable").classList.remove("hidden");
+    document.getElementById("sessionCounter").classList.remove("hidden");
+    document.getElementById("endSessionBtn").classList.remove("hidden");
+
+    if (!sessionTimer) {
+        sessionTimer = setInterval(updateSessionTimer, 1000);
     }
-});
 
-// ACTUALIZAR DISPLAY
-function updateDisplay() {
-    document.getElementById('credits').textContent = credits.toFixed(2) + '€';
-    document.getElementById('bet').textContent = currentBet.toFixed(2) + '€';
-    
-    const spinBtn = document.getElementById('spinBtn');
-    spinBtn.disabled = !sessionActive || currentBet <= 0 || currentBet > credits;
+    updateSessionDisplay();
+    updateSessionTimer();
 }
 
-// FIJAR APUESTA
-function setBet(amount) {
-    const maxAllowed = Math.min(credits, realSaldo);
-    const safeAmount = Number(amount);
-
-    if (!safeAmount || safeAmount <= 0) return;
-
-    if (safeAmount <= maxAllowed) {
-        currentBet = safeAmount;
-        updateDisplay();
-    } else {
-        alert('No puedes apostar más de tu saldo disponible');
-        currentBet = 0;
-        updateDisplay();
+async function checkExistingGameSession() {
+    try {
+        const data = await gameSessionApi("status");
+        applySessionState(data);
+    } catch (error) {
+        console.error(error);
+        showAlert("Error consultando sesión de juego");
     }
 }
 
-// APUESTA PERSONALIZADA
-function setCustomBet() {
-    const amount = Number(document.getElementById('customBetInput').value);
-    const maxAllowed = Math.min(credits, realSaldo);
+async function confirmSession() {
+    const bankrollInput = parseFloat(document.getElementById("bankroll").value);
+    const timeInput = parseInt(document.getElementById("time").value);
 
-    if (!amount || amount <= 0) {
-        alert('Ingresa una apuesta válida');
+    if (isNaN(bankrollInput) || bankrollInput <= 0) {
+        showAlert("Ingresa un monto válido");
         return;
     }
 
-    if (amount <= maxAllowed) {
-        currentBet = amount;
-        updateDisplay();
-    } else {
-        alert('No puedes apostar más de tu saldo disponible');
-        currentBet = 0;
-        updateDisplay();
-    }
-}
-
-// GIRAR
-async function spin() {
-    if (isSpinning || currentBet > credits) return;
-    
-    isSpinning = true;
-    document.getElementById('spinBtn').disabled = true;
-    
-    // Descontar apuesta
-    credits -= currentBet;
-    updateDisplay();
-    
-    // ANIMAR RODILLOS 3x3
-    const reels = [];
-    for(let i = 0; i < 9; i++) {
-        reels.push(document.getElementById('reel' + i));
-    }
-    
-    // Animaciones con tiempos diferentes
-    const spins = [];
-    for(let i = 0; i < 9; i++) {
-        spins.push(Math.floor(Math.random() * (15 + i*2)) + 15);
-    }
-    
-    // Solicitar resultado al servidor
-    const response = await fetch('resultado_tragaperras.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bet: currentBet })
-    });
-    
-    const result = await response.json();
-    const finalSymbols = result.symbols;
-    
-    // Animar cada posición
-    for (let i = 0; i < 9; i++) {
-        animateSpin(reels[i], spins[i], finalSymbols[i]);
-    }
-    
-    // Esperar a que terminen las animaciones
-    await new Promise(resolve => setTimeout(resolve, 2500));
-    
-    // Procesar resultado
-    processResult(finalSymbols, result);
-    
-    isSpinning = false;
-    document.getElementById('spinBtn').disabled = false;
-}
-
-// ANIMAR RODILLO
-function animateSpin(reel, spinCount, finalSymbol) {
-    const symbol = reel.querySelector('.reel-symbol');
-    reel.classList.add('spinning');
-    
-    let current = 0;
-    const interval = setInterval(() => {
-        symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-        current++;
-        
-        if (current >= spinCount) {
-            clearInterval(interval);
-            symbol.textContent = finalSymbol;
-            reel.classList.remove('spinning');
-        }
-    }, 50);
-}
-
-// PROCESAR RESULTADO
-function processResult(symbols, result) {
-    let totalWin = result.totalWin || 0;
-    let resultType = totalWin > 0 ? 'win' : 'lose';
-    let message = result.message || 'Intenta de nuevo';
-    
-    // CALCULAR GANANCIA
-    if (resultType !== 'lose') {
-        credits += totalWin;
-    }
-    
-    // MOSTRAR RESULTADO
-    const resultDiv = document.getElementById('result');
-    document.getElementById('resultTitle').textContent = resultType === 'lose' ? '😢 Perdiste' : '🎉 ¡Ganaste!';
-    document.getElementById('resultMessage').textContent = message;
-    document.getElementById('resultAmount').textContent = (resultType === 'lose' ? '-' : '+') + totalWin.toFixed(2) + '€';
-    
-    resultDiv.className = 'result visible ' + resultType;
-    
-    // Limpiar resultado después de 3 segundos
-    setTimeout(() => {
-        resultDiv.classList.remove('visible');
-    }, 3000);
-    
-    updateDisplay();
-    
-    // Guardar cambio de saldo
-    saveSaldo();
-}
-
-// GUARDAR SALDO
-async function saveSaldo() {
-    await fetch('resultado_tragaperras.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ saveSaldo: true, newSaldo: credits })
-    });
-}
-
-// SALIR DEL JUEGO
-function exitGame() {
-    if (!sessionActive) {
-        window.location.href = 'principal.php';
+    if (bankrollInput > saldo) {
+        showAlert("Saldo insuficiente");
         return;
     }
-    
-    if (confirm('¿Salir del juego? Se guardará tu saldo actual.')) {
-        saveSaldo();
+
+    try {
+        const data = await gameSessionApi("start", {
+            bankroll: bankrollInput,
+            time: timeInput
+        });
+
+        if (!data.ok) {
+            showAlert(data.message || "No se pudo iniciar la sesión");
+            return;
+        }
+
+        applySessionState(data);
+
+    } catch (error) {
+        console.error(error);
+        showAlert("Error iniciando sesión");
+    }
+}
+
+async function endSession(auto = false) {
+    if (spinning && !auto) {
+        showAlert("⏳ Espera a que termine la tirada");
+        return;
+    }
+
+    try {
+        const data = await gameSessionApi("close");
+
+        if (!data.ok) {
+            showAlert(data.message || "No se pudo cerrar la sesión");
+            return;
+        }
+
+        saldo = Number(data.saldo_cuenta || 0);
+        updateSaldo();
+
+        showAlert(auto ? "⏰ Sesión finalizada. Volviendo..." : "✅ Sesión finalizada. Volviendo...");
+
         setTimeout(() => {
-            window.location.href = 'principal.php';
-        }, 500);
+            window.location.href = data.redirect || "principal.php";
+        }, 1200);
+
+    } catch (error) {
+        console.error(error);
+        showAlert("Error cerrando sesión");
     }
 }
+
+function updateSessionTimer() {
+    if (!sessionActive || !sessionExpiresAt) {
+        return;
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+    const remaining = Math.max(0, sessionExpiresAt - now);
+
+    if (remaining <= 0) {
+        document.getElementById("sessionTime").textContent = "00:00";
+
+        if (!sessionExpiredAlertShown) {
+            sessionExpiredAlertShown = true;
+            showAlert("⏰ Tiempo agotado. Termina la tirada actual.");
+        }
+
+        if (!spinning) {
+            endSession(true);
+        }
+
+        return;
+    }
+
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+
+    document.getElementById("sessionTime").textContent =
+        `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function updateSessionDisplay() {
+    document.getElementById("sessionBankroll").textContent = `$${sessionBankroll.toFixed(2)}`;
+    document.getElementById("sessionBetLimit").textContent = `Disponible: $${sessionBetLimit.toFixed(2)}`;
+    document.getElementById("availableText").textContent = `Disponible: $${sessionBetLimit.toFixed(2)}`;
+}
+
+function updateSaldo() {
+    document.getElementById("saldoHeader").textContent = saldo.toFixed(2);
+}
+
+// ==================== TRAGAPERRAS ====================
+function randomSymbol() {
+    return symbols[Math.floor(Math.random() * symbols.length)];
+}
+
+function setBet(amount) {
+    if (spinning) {
+        showAlert("⏳ Espera a que termine la tirada");
+        return;
+    }
+
+    if (amount > sessionBetLimit) {
+        showAlert(`Máximo disponible: $${sessionBetLimit.toFixed(2)}`);
+        amount = sessionBetLimit;    }
+
+    document.getElementById("betInput").value = Number(amount).toFixed(2);
+}
+
+function setMaxBet() {
+    if (sessionBetLimit <= 0) {
+        showAlert("No tienes saldo disponible en la sesión");
+        return;
+    }
+
+    setBet(sessionBetLimit);
+}
+
+function getBetAmount() {
+    const bet = parseFloat(document.getElementById("betInput").value);
+
+    if (isNaN(bet)) {
+        return 0;
+    }
+
+    return Math.round(bet * 100) / 100;
+}
+
+function calculateMultiplier(finalSymbols) {
+    const [a, b, c] = finalSymbols;
+
+    /*
+        Tres símbolos iguales.
+    */
+    if (a === b && b === c) {
+        return payoutTable[a] || 2;
+    }
+
+    /*
+        Dos estrellas pagan x3.
+    */
+    const stars = finalSymbols.filter(s => s === "⭐").length;
+    if (stars === 2) {
+        return 3;
+    }
+
+    /*
+        Dos 7 pagan x2.
+    */
+    const sevens = finalSymbols.filter(s => s === "7️⃣").length;
+    if (sevens === 2) {
+        return 2;
+    }
+
+    /*
+        Si no coincide nada, pierde.
+    */
+    return 0;
+}
+
+function setReels(finalSymbols) {
+    document.getElementById("reel1").textContent = finalSymbols[0];
+    document.getElementById("reel2").textContent = finalSymbols[1];
+    document.getElementById("reel3").textContent = finalSymbols[2];
+}
+
+function startReelAnimation() {
+    document.getElementById("reel1").classList.add("spinning");
+    document.getElementById("reel2").classList.add("spinning");
+    document.getElementById("reel3").classList.add("spinning");
+
+    document.getElementById("slotMachine").classList.remove("glow-win", "glow-loss");
+}
+
+function stopReelAnimation() {
+    document.getElementById("reel1").classList.remove("spinning");
+    document.getElementById("reel2").classList.remove("spinning");
+    document.getElementById("reel3").classList.remove("spinning");
+}
+
+function animateSpin(finalSymbols) {
+    return new Promise(resolve => {
+        startReelAnimation();
+
+        let counter = 0;
+
+        const interval = setInterval(() => {
+            document.getElementById("reel1").textContent = randomSymbol();
+            document.getElementById("reel2").textContent = randomSymbol();
+            document.getElementById("reel3").textContent = randomSymbol();
+
+            counter++;
+
+            if (counter >= 20) {
+                clearInterval(interval);
+
+                setTimeout(() => {
+                    document.getElementById("reel1").textContent = finalSymbols[0];
+                }, 200);
+
+                setTimeout(() => {
+                    document.getElementById("reel2").textContent = finalSymbols[1];
+                }, 500);
+
+                setTimeout(() => {
+                    document.getElementById("reel3").textContent = finalSymbols[2];
+                    stopReelAnimation();
+                    resolve();
+                }, 800);
+            }
+        }, 80);
+    });
+}
+
+function generateFinalSymbols() {
+    /*
+        Resultado simple:
+        - La mayoría de veces aleatorio.
+        - Algunas veces fuerza una combinación ganadora.
+    */
+    const r = Math.random();
+
+    if (r < 0.08) {
+        return ["⭐", "⭐", "⭐"];
+    }
+
+    if (r < 0.14) {
+        return ["7️⃣", "7️⃣", "7️⃣"];
+    }
+
+    if (r < 0.22) {
+        return ["💎", "💎", "💎"];
+    }
+
+    if (r < 0.32) {
+        return ["🔔", "🔔", "🔔"];
+    }
+
+    if (r < 0.44) {
+        return ["🍋", "🍋", "🍋"];
+    }
+
+    if (r < 0.58) {
+        return ["🍒", "🍒", "🍒"];
+    }
+
+    /*
+        Resultado aleatorio normal.
+    */
+    return [
+        randomSymbol(),
+        randomSymbol(),
+        randomSymbol()
+    ];
+}
+
+async function spin() {
+    if (!sessionActive) {
+        showAlert("🎮 Inicia sesión primero");
+        return;
+    }
+
+    if (spinning) {
+        showAlert("⏳ Espera a que termine la tirada");
+        return;
+    }
+
+    const apuesta = getBetAmount();
+
+    if (apuesta <= 0) {
+        showAlert("Apuesta inválida");
+        return;
+    }
+
+    if (apuesta > sessionBetLimit) {
+        showAlert(`Máximo disponible: $${sessionBetLimit.toFixed(2)}`);
+        return;
+    }
+
+    spinning = true;
+
+    document.getElementById("spinBtn").disabled = true;
+    document.getElementById("resultText").textContent = "Girando...";
+    document.getElementById("resultText").className = "h-16 text-3xl md:text-4xl font-black mb-6 text-yellow-400";
+
+    try {
+        /*
+            1. Descontar apuesta del saldo de sesión.
+        */
+        const debitData = await gameSessionApi("debit", {
+            amount: apuesta,
+            game: "tragaperras"
+        });
+
+        if (!debitData.ok) {
+            spinning = false;
+            document.getElementById("spinBtn").disabled = false;
+
+            showAlert(debitData.message || "No se pudo realizar la apuesta");
+
+            if (typeof debitData.active !== "undefined") {
+                applySessionState(debitData);
+            }
+
+            return;
+        }
+
+        applySessionState(debitData);
+
+        /*
+            2. Generar resultado y animar.
+        */
+        const finalSymbols = generateFinalSymbols();
+        const multiplier = calculateMultiplier(finalSymbols);
+
+        await animateSpin(finalSymbols);
+
+        /*
+            3. Liquidar apuesta.
+        */
+        let resultForServer = "loss";
+
+        if (multiplier > 0) {
+            resultForServer = "win";
+        }
+
+        const settleData = await gameSessionApi("settle", {
+            result: resultForServer,
+            multiplier: multiplier
+        });
+
+        if (!settleData.ok) {
+            spinning = false;
+            document.getElementById("spinBtn").disabled = false;
+
+            showAlert(settleData.message || "Error liquidando apuesta");
+            return;
+        }
+
+        applySessionState(settleData);
+
+        /*
+            4. Mostrar resultado.
+        */
+        if (resultForServer === "win") {
+            const premio = apuesta * multiplier;
+
+            document.getElementById("resultText").textContent =
+                `🎉 Ganaste $${premio.toFixed(2)} x${multiplier}`;
+
+            document.getElementById("resultText").className =
+                "h-16 text-3xl md:text-4xl font-black mb-6 text-green-400 animate-pulse";
+
+            document.getElementById("slotMachine").classList.add("glow-win");
+            document.getElementById("slotMachine").classList.remove("glow-loss");
+
+            showAlert(`🎉 Ganaste $${premio.toFixed(2)}`);
+
+        } else {
+            document.getElementById("resultText").textContent =
+                "💀 Perdiste";
+
+            document.getElementById("resultText").className =
+                "h-16 text-3xl md:text-4xl font-black mb-6 text-red-500 animate-pulse";
+
+            document.getElementById("slotMachine").classList.add("glow-loss");
+            document.getElementById("slotMachine").classList.remove("glow-win");
+
+            showAlert("💀 Perdiste");
+        }
+
+    } catch (error) {
+        console.error(error);
+        showAlert("Error en la tirada");
+    }
+
+    spinning = false;
+    document.getElementById("spinBtn").disabled = false;
+
+    /*
+        Si el tiempo terminó durante la tirada,
+        al finalizar liquidamos y cerramos sesión automáticamente.
+    */
+    if (sessionExpiredAlertShown) {
+        setTimeout(() => {
+            endSession(true);
+        }, 1000);
+    }
+}
+
+// ==================== UTILIDADES ====================
+function showAlert(msg) {
+    const alertBox = document.getElementById("casinoAlert");
+
+    alertBox.innerText = msg;
+    alertBox.classList.remove("hidden");
+
+    setTimeout(() => {
+        alertBox.classList.add("hidden");
+    }, 3000);
+}
+
+function goHome() {
+    if (spinning) {
+        showAlert("⏳ Espera a que termine la tirada");
+        return;
+    }
+
+    /*
+        Ir a principal NO cierra la sesión.
+        La sesión sirve para todos los juegos.
+        Para devolver el saldo de sesión al saldo real, usa TERMINAR SESIÓN.
+    */
+    window.location.href = "principal.php";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    checkExistingGameSession();
+
+    document.getElementById("betInput").addEventListener("input", function () {
+        const apuesta = getBetAmount();
+
+        if (apuesta > sessionBetLimit) {
+            showAlert(`Máximo disponible: $${sessionBetLimit.toFixed(2)}`);
+            this.value = sessionBetLimit.toFixed(2);
+        }
+    });
+});
 </script>
 
 </body>

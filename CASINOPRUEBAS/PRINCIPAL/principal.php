@@ -298,7 +298,7 @@ $(document).ready(function(){
             <div class="p-5 text-center font-black">🎰 TRAGAPERRAS</div>
         </div>
 
-        <div onclick="window.location.href='juego3.php'" class="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-105 transition-all duration-200">
+        <div onclick="window.location.href='minas.php'" class="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-105 transition-all duration-200">
             <img src="img/777.png" class="w-full h-56 object-cover">
             <div class="p-5 text-center font-black">Juego 3</div>
         </div>

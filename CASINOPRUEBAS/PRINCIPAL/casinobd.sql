@@ -272,3 +272,6 @@ LIMIT 20;
 
 SELECT *
 FROM estadisticas_usuario;
+
+USE casino;
+
