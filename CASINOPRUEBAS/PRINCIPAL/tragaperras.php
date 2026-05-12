@@ -533,17 +533,16 @@ function animateSpin(finalSymbols) {
 
 function generateFinalSymbols() {
     /*
-        Probabilidades reducidas significativamente:
-        - Total de victoria: ~20% en lugar de ~58%
-        - Muy difícil conseguir 3 estrellas
+        - Total de victoria: ~20% 
+        - Muy difícil conseguir 3 estrellas y 3 seises (1% cada uno)
     */
     const r = Math.random();
 
-    if (r < 0.015) {
+    if (r < 0.01) {
         return ["⭐", "⭐", "⭐"];
     }
 
-    if (r < 0.025) {
+    if (r < 0.02) {
         return ["7️⃣", "7️⃣", "7️⃣"];
     }
 
