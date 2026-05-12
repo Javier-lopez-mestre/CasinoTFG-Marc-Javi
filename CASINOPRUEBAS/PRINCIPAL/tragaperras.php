@@ -160,55 +160,55 @@ body {
 </div>
 
 <!-- JUEGO -->
-<main id="gameTable" class="relative z-10 min-h-screen pt-28 px-4 pb-10 hidden">
+<main id="gameTable" class="relative z-10 min-h-screen pt-32 px-4 pb-4 hidden">
 
     <section class="max-w-5xl mx-auto text-center">
 
-        <h1 class="text-5xl md:text-7xl font-black text-yellow-400 mb-8 drop-shadow-2xl">
+        <h1 class="text-3xl md:text-4xl font-black text-yellow-400 mb-3 drop-shadow-2xl">
             🎰 TRAGAPERRAS
         </h1>
 
-        <div id="slotMachine" class="slot-machine border-8 border-yellow-400 rounded-[2rem] p-6 md:p-10 max-w-4xl mx-auto">
+        <div id="slotMachine" class="slot-machine border-6 border-yellow-400 rounded-2xl p-2 md:p-4 max-w-xl mx-auto">
 
-            <div class="grid grid-cols-3 gap-4 mb-8">
-                <div id="reel1" class="reel rounded-3xl h-36 md:h-48 flex items-center justify-center text-7xl md:text-9xl font-black">
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div id="reel1" class="reel rounded-2xl h-20 md:h-24 flex items-center justify-center text-4xl md:text-5xl font-black">
                     🍒
                 </div>
 
-                <div id="reel2" class="reel rounded-3xl h-36 md:h-48 flex items-center justify-center text-7xl md:text-9xl font-black">
+                <div id="reel2" class="reel rounded-2xl h-20 md:h-24 flex items-center justify-center text-4xl md:text-5xl font-black">
                     🍋
                 </div>
 
-                <div id="reel3" class="reel rounded-3xl h-36 md:h-48 flex items-center justify-center text-7xl md:text-9xl font-black">
+                <div id="reel3" class="reel rounded-2xl h-20 md:h-24 flex items-center justify-center text-4xl md:text-5xl font-black">
                     🔔
                 </div>
             </div>
 
-            <div id="resultText" class="h-16 text-3xl md:text-4xl font-black mb-6 text-yellow-400"></div>
+            <div id="resultText" class="h-10 text-lg md:text-xl font-black mb-4 text-yellow-400"></div>
 
-            <div class="bg-black/50 rounded-3xl p-6 max-w-md mx-auto mb-6">
-                <label class="block text-zinc-300 font-bold mb-2 text-xl">
+            <div class="bg-black/50 rounded-2xl p-4 max-w-xs mx-auto mb-4">
+                <label class="block text-zinc-300 font-bold mb-2 text-sm">
                     Apuesta
                 </label>
 
                 <input id="betInput" type="number" min="0.5" step="0.5" value="1"
-                       class="w-full bg-zinc-900 border-2 border-yellow-400 rounded-2xl p-4 text-center text-3xl font-black outline-none text-white">
+                       class="w-full bg-zinc-900 border-2 border-yellow-400 rounded-xl p-2 text-center text-xl font-black outline-none text-white">
 
-                <p id="availableText" class="text-zinc-400 mt-3 font-bold">
+                <p id="availableText" class="text-zinc-400 mt-2 font-bold text-xs">
                     Disponible: $0
                 </p>
             </div>
 
-            <div class="flex flex-wrap justify-center gap-3 mb-8">
-                <button onclick="setBet(0.5)" class="bg-white text-black px-5 py-3 rounded-xl font-black hover:scale-105 transition">$0.5</button>
-                <button onclick="setBet(1)" class="bg-yellow-300 text-black px-5 py-3 rounded-xl font-black hover:scale-105 transition">$1</button>
-                <button onclick="setBet(2)" class="bg-green-500 text-white px-5 py-3 rounded-xl font-black hover:scale-105 transition">$2</button>
-                <button onclick="setBet(5)" class="bg-blue-500 text-white px-5 py-3 rounded-xl font-black hover:scale-105 transition">$5</button>
-                <button onclick="setBet(10)" class="bg-red-500 text-white px-5 py-3 rounded-xl font-black hover:scale-105 transition">$10</button>
-                <button onclick="setMaxBet()" class="bg-purple-500 text-white px-5 py-3 rounded-xl font-black hover:scale-105 transition">MAX</button>
+            <div class="flex flex-wrap justify-center gap-2 mb-4">
+                <button onclick="setBet(0.5)" class="bg-white text-black px-3 py-2 rounded-lg font-bold hover:scale-105 transition text-sm">$0.5</button>
+                <button onclick="setBet(1)" class="bg-yellow-300 text-black px-3 py-2 rounded-lg font-bold hover:scale-105 transition text-sm">$1</button>
+                <button onclick="setBet(2)" class="bg-green-500 text-white px-3 py-2 rounded-lg font-bold hover:scale-105 transition text-sm">$2</button>
+                <button onclick="setBet(5)" class="bg-blue-500 text-white px-3 py-2 rounded-lg font-bold hover:scale-105 transition text-sm">$5</button>
+                <button onclick="setBet(10)" class="bg-red-500 text-white px-3 py-2 rounded-lg font-bold hover:scale-105 transition text-sm">$10</button>
+                <button onclick="setMaxBet()" class="bg-purple-500 text-white px-3 py-2 rounded-lg font-bold hover:scale-105 transition text-sm">MAX</button>
             </div>
 
-            <button id="spinBtn" onclick="spin()" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black px-16 py-6 rounded-3xl text-4xl font-black shadow-2xl transition disabled:opacity-50 disabled:cursor-not-allowed">
+            <button id="spinBtn" onclick="spin()" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black px-8 py-3 rounded-2xl text-lg font-black shadow-2xl transition disabled:opacity-50 disabled:cursor-not-allowed">
                 GIRAR 🎰
             </button>
 
