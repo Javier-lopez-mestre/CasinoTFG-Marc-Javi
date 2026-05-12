@@ -472,23 +472,7 @@ function calculateMultiplier(finalSymbols) {
     }
 
     /*
-        Dos estrellas pagan x3.
-    */
-    const stars = finalSymbols.filter(s => s === "⭐").length;
-    if (stars === 2) {
-        return 3;
-    }
-
-    /*
-        Dos 7 pagan x2.
-    */
-    const sevens = finalSymbols.filter(s => s === "7️⃣").length;
-    if (sevens === 2) {
-        return 2;
-    }
-
-    /*
-        Si no coincide nada, pierde.
+        No hay bonificación por dos símbolos - solo 3 iguales ganan.
     */
     return 0;
 }
@@ -549,38 +533,38 @@ function animateSpin(finalSymbols) {
 
 function generateFinalSymbols() {
     /*
-        Resultado simple:
-        - La mayoría de veces aleatorio.
-        - Algunas veces fuerza una combinación ganadora.
+        Probabilidades reducidas significativamente:
+        - Total de victoria: ~20% en lugar de ~58%
+        - Muy difícil conseguir 3 estrellas
     */
     const r = Math.random();
 
-    if (r < 0.08) {
+    if (r < 0.015) {
         return ["⭐", "⭐", "⭐"];
     }
 
-    if (r < 0.14) {
+    if (r < 0.025) {
         return ["7️⃣", "7️⃣", "7️⃣"];
     }
 
-    if (r < 0.22) {
+    if (r < 0.055) {
         return ["💎", "💎", "💎"];
     }
 
-    if (r < 0.32) {
+    if (r < 0.095) {
         return ["🔔", "🔔", "🔔"];
     }
 
-    if (r < 0.44) {
+    if (r < 0.145) {
         return ["🍋", "🍋", "🍋"];
     }
 
-    if (r < 0.58) {
+    if (r < 0.205) {
         return ["🍒", "🍒", "🍒"];
     }
 
     /*
-        Resultado aleatorio normal.
+        Resultado aleatorio normal (79.5% de probabilidad).
     */
     return [
         randomSymbol(),
