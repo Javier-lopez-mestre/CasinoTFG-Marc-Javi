@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 include("conexion.php");
@@ -26,8 +27,51 @@ $saldo = (float) ($row['saldo'] ?? 0);
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
+* {
+    box-sizing: border-box;
+}
+
+html,
 body {
-    background: url("img/mesablackjack.png") center/cover no-repeat;
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body {
+    min-height: 100dvh;
+    background-color: #06140c;
+    background-image:
+        radial-gradient(circle at top, rgba(250, 204, 21, 0.18), transparent 28%),
+        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.75)),
+        url("img/mesablackjack.png");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page-overlay {
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at top center, rgba(255, 215, 0, 0.15), transparent 35%),
+        radial-gradient(circle at bottom center, rgba(34, 197, 94, 0.18), transparent 35%),
+        rgba(0, 0, 0, 0.40);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .deal-anim {
@@ -39,6 +83,7 @@ body {
         transform: translateY(-40px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -47,11 +92,11 @@ body {
 
 .session-counter {
     background: linear-gradient(45deg, #10b981, #059669);
-    box-shadow: 0 10px 30px rgba(16,185,129,0.4);
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
 }
 
 .stats-btn {
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
     border: 2px solid #fbbf24;
     transition: all 0.3s;
 }
@@ -59,47 +104,75 @@ body {
 .stats-btn:hover {
     background: #fbbf24;
     color: black;
-    box-shadow: 0 0 20px rgba(251,191,36,0.6);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
 }
 
 .modal-overlay {
-    background: rgba(0,0,0,0.9);
+    background: rgba(0, 0, 0, 0.9);
     backdrop-filter: blur(10px);
 }
 
-#dropZone.bet-active {
-    border-color: #22c55e;
-    box-shadow: 0 0 40px rgba(34,197,94,0.8);
-}
-
-#dropZone.bet-max {
-    border-color: #ef4444;
-    box-shadow: 0 0 40px rgba(239,68,68,0.8);
+.main-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 80px;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.72);
+    border-bottom: 1px solid rgba(250, 204, 21, 0.25);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
 }
 
 .game-container {
-    min-height: calc(100vh - 5rem);
+    min-height: calc(100dvh - 88px);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 2rem 1rem;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.score-row {
+    width: 100%;
+    max-width: 1050px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1rem;
+    padding: 0.8rem 1.2rem !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
 .game-board {
     flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 4rem;
-    max-width: 1200px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px minmax(0, 1fr);
+    align-items: start;
+    gap: 1rem;
+    max-width: 1180px;
     margin: 0 auto;
     width: 100%;
 }
 
 .dealer-section,
-.player-section {
-    flex: 1;
+.player-section,
+.center-section {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(10, 10, 10, 0.58),
+        rgba(10, 10, 10, 0.28)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1.5rem;
+    padding: 1rem;
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
 }
 
 .dealer-section {
@@ -111,129 +184,505 @@ body {
 }
 
 .center-section {
-    flex: 0 0 300px;
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 2rem;
+    gap: 0.65rem;
+    border-color: rgba(250, 204, 21, 0.32);
+}
+
+.dealer-section h2,
+.player-section h2 {
+    color: #facc15;
+    text-shadow: 0 3px 15px rgba(250, 204, 21, 0.4);
+    margin-bottom: 0.75rem;
 }
 
 .cards-container {
+    width: 100%;
+    min-height: 150px;
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    min-height: 200px;
-    justify-content: center;
-}
-
-.chips-container {
-    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    max-width: 400px;
-}
-
-.bottom-section {
-    display: flex;
-    flex-direction: column;
+    gap: 0.7rem;
     align-items: center;
-    gap: 2rem;
-    padding-top: 2rem;
-    border-top: 3px solid rgba(255,255,255,0.2);
+    justify-content: center;
+    padding: 0.8rem;
+    border-radius: 1.25rem;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px dashed rgba(255, 255, 255, 0.16);
 }
 
 .card {
-    width: 90px;
-    height: 130px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    width: 84px;
+    height: 122px;
+    border-radius: 0.8rem;
+    flex: 0 0 auto;
+    transform-origin: bottom center;
+    box-shadow:
+        0 12px 25px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
-@media(max-width:1024px) {
-    .game-board {
-        flex-direction: column;
-        gap: 2rem;
-    }
+.card img {
+    border-radius: 0.8rem;
+}
 
-    .dealer-section,
-    .player-section {
-        align-items: center;
+.result-text,
+.bottom-result {
+    width: 100%;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
+    line-height: 1.15;
+}
+
+.drop-zone {
+    position: relative;
+    isolation: isolate;
+    background:
+        radial-gradient(circle, rgba(34, 197, 94, 0.18), rgba(0, 0, 0, 0.42)),
+        rgba(0, 0, 0, 0.3);
+    box-shadow:
+        0 0 45px rgba(34, 197, 94, 0.45),
+        inset 0 0 35px rgba(34, 197, 94, 0.16);
+}
+
+.drop-zone::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border-radius: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    pointer-events: none;
+}
+
+.drop-zone:hover {
+    transform: translateY(-2px) scale(1.02);
+}
+
+#dropZone.bet-active {
+    border-color: #22c55e;
+    box-shadow:
+        0 0 55px rgba(34, 197, 94, 0.85),
+        inset 0 0 35px rgba(34, 197, 94, 0.2);
+}
+
+#dropZone.bet-max {
+    border-color: #ef4444;
+    box-shadow:
+        0 0 55px rgba(239, 68, 68, 0.82),
+        inset 0 0 35px rgba(239, 68, 68, 0.18);
+}
+
+.chips-container {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+    padding: 0.75rem;
+    border-radius: 1.25rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.chip {
+    touch-action: manipulation;
+    user-select: none;
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.45),
+        inset 0 3px 7px rgba(255, 255, 255, 0.35),
+        inset 0 -5px 8px rgba(0, 0, 0, 0.25);
+}
+
+.chip:active {
+    transform: scale(0.94);
+}
+
+.bottom-section {
+    width: 100%;
+    max-width: 460px;
+    margin: -0.2rem auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    padding-top: 0;
+}
+
+.action-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-casino {
+    border: 0;
+    color: white;
+    font-weight: 900;
+    border-radius: 1.25rem;
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+}
+
+.btn-casino:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    filter: brightness(1.08);
+}
+
+.btn-casino:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.btn-deal {
+    width: 100%;
+    padding: 0.95rem 1.5rem;
+    font-size: 1.55rem;
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    border: 3px solid rgba(147, 197, 253, 0.75);
+    box-shadow:
+        0 16px 35px rgba(37, 99, 235, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.btn-hit,
+.btn-stand {
+    flex: 1;
+    min-width: 135px;
+    padding: 0.9rem 1rem;
+    font-size: 1.25rem;
+}
+
+.btn-hit {
+    background: linear-gradient(135deg, #eab308, #f59e0b);
+    color: #111827;
+    border: 3px solid rgba(254, 240, 138, 0.75);
+}
+
+.btn-stand {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border: 3px solid rgba(252, 165, 165, 0.75);
+}
+
+.start-card {
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+}
+
+@media(max-width: 1100px) {
+    .game-board {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
     .center-section {
-        order: 3;
+        order: 1;
     }
 
-    .bottom-section {
-        order: 4;
+    .dealer-section {
+        order: 2;
+        align-items: center;
+    }
+
+    .player-section {
+        order: 3;
+        align-items: center;
+    }
+
+    .cards-container {
+        min-height: 120px;
     }
 }
 
-@media(max-width:768px) {
-    .header-buttons {
+@media(max-width: 768px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    .main-header {
+        min-height: auto;
+    }
+
+    .header-inner {
         flex-direction: column;
-        gap: 0.5rem;
+        height: auto !important;
+        padding: 0.55rem 0.35rem;
+        gap: 0.45rem;
+    }
+
+    .header-left,
+    .header-buttons,
+    .header-balance {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .header-left button,
+    .header-buttons button {
+        padding: 0.48rem 0.7rem;
+        font-size: 0.82rem;
+        border-radius: 0.75rem;
+    }
+
+    .session-counter {
+        width: 100%;
+        text-align: center;
+        font-size: 0.76rem;
+        line-height: 1.35;
+        padding: 0.48rem 0.65rem;
+        border-radius: 0.9rem;
+    }
+
+    .header-balance > div {
+        font-size: 0.88rem !important;
+        padding: 0.48rem 0.85rem !important;
+        border-radius: 0.9rem !important;
+    }
+
+    .game-container {
+        min-height: auto;
+        padding: 0.55rem;
+        gap: 0.55rem;
+    }
+
+    .score-row {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.25rem;
+        font-size: 0.86rem !important;
+        padding: 0.5rem !important;
+    }
+
+    .dealer-section,
+    .player-section,
+    .center-section {
+        padding: 0.55rem;
+        border-radius: 1rem;
+    }
+
+    .center-section {
+        gap: 0.42rem;
+    }
+
+    .dealer-section h2,
+    .player-section h2 {
+        font-size: 1rem !important;
+        margin-bottom: 0.35rem;
+    }
+
+    .result-text {
+        min-height: 28px;
+        font-size: 1rem !important;
+        margin-bottom: 0 !important;
+    }
+
+    .bottom-result {
+        min-height: 24px;
+        font-size: 1rem !important;
+        margin-bottom: 0 !important;
+    }
+
+    #dropZone {
+        width: min(58vw, 180px) !important;
+        height: min(58vw, 180px) !important;
+        padding: 0.7rem !important;
+        border-width: 4px !important;
+    }
+
+    #dropZone .text-2xl {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.35rem !important;
+    }
+
+    #dropZone .text-5xl {
+        font-size: 1.65rem !important;
+        margin-bottom: 0.35rem !important;
+    }
+
+    #dropZone #betLimit {
+        font-size: 0.75rem !important;
+    }
+
+    .bottom-section {
+        max-width: 100%;
+        gap: 0.35rem;
+        margin-top: -0.15rem;
+        padding-top: 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 0.45rem;
+        width: 100%;
+    }
+
+    .btn-deal {
+        width: 100%;
+        padding: 0.75rem 1rem !important;
+        font-size: 1.1rem !important;
+        border-radius: 0.9rem !important;
+    }
+
+    .btn-hit,
+    .btn-stand {
+        flex: 1;
+        width: auto !important;
+        min-width: 0 !important;
+        padding: 0.75rem 0.45rem !important;
+        font-size: 0.92rem !important;
+        border-radius: 0.85rem !important;
+        white-space: nowrap;
     }
 
     .chips-container {
-        gap: 0.5rem;
+        margin-top: 0.1rem;
+        gap: 0.35rem;
+        max-width: 100%;
+        padding: 0.45rem;
     }
 
     .chip {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 0.62rem !important;
+        border-width: 3px !important;
+    }
+
+    .card {
         width: 50px;
-        height: 50px;
-        font-size: 12px !important;
+        height: 74px;
+    }
+
+    .cards-container {
+        min-height: 86px;
+        gap: 0.35rem;
+        padding: 0.45rem;
+    }
+
+    #casinoAlert {
+        top: 0.75rem !important;
+        font-size:```php
+        0.95rem !important;
+        padding: 0.8rem 1rem !important;
+        width: calc(100vw - 1.5rem);
+    }
+}
+
+@media(max-width: 430px) {
+    .game-container {
+        padding: 0.45rem;
+    }
+
+    #dropZone {
+        width: 160px !important;
+        height: 160px !important;
+    }
+
+    #dropZone .text-2xl {
+        font-size: 0.9rem !important;
+    }
+
+    #dropZone .text-5xl {
+        font-size: 1.55rem !important;
+    }
+
+    .btn-deal {
+        padding: 0.65rem 0.85rem !important;
+        font-size: 0.98rem !important;
+    }
+
+    .btn-hit,
+    .btn-stand {
+        padding: 0.65rem 0.35rem !important;
+        font-size: 0.82rem !important;
+    }
+
+    .chip {
+        width: 39px !important;
+        height: 39px !important;
+        font-size: 0.55rem !important;
+    }
+
+    .card {
+        width: 46px;
+        height: 68px;
+    }
+
+    .result-text {
+        font-size: 0.95rem !important;
+    }
+
+    .bottom-result {
+        font-size: 0.95rem !important;
+    }
+
+    .score-row {
+        font-size: 0.8rem !important;
     }
 }
 </style>
 </head>
 
-<body class="overflow-hidden text-white">
+<body class="text-white">
 
-<div class="fixed inset-0 bg-black/60"></div>
+<div class="page-overlay"></div>
 
-<header class="fixed top-0 left-0 w-full h-20 bg-black/70 backdrop-blur-md px-4 z-50 flex flex-col sm:flex-row items-center justify-between gap-2 pt-2">
-    <div class="flex items-center gap-2">
-        <button onclick="goHome()" class="bg-black border border-white px-4 py-2 rounded-xl hover:bg-white hover:text-black transition font-bold">
-            🏠 Principal
-        </button>
+<header class="main-header bg-black/70 backdrop-blur-md px-4">
+    <div class="header-inner max-w-7xl mx-auto min-h-20 flex flex-col sm:flex-row items-center justify-between gap-2 py-2">
 
-        <div id="sessionCounter" class="session-counter px-4 py-2 rounded-2xl text-lg font-black hidden">
-            ⏱️ <span id="sessionTime">00:00</span> |
-            💰 Sesión: <span id="sessionBankroll">$0</span> |
-            <span id="sessionBetLimit">Disponible: $0</span>
+        <div class="header-left flex items-center gap-2">
+            <button onclick="goHome()" class="bg-black border border-white px-4 py-2 rounded-xl hover:bg-white hover:text-black transition font-bold">
+                🏠 Principal
+            </button>
+
+            <div id="sessionCounter" class="session-counter px-4 py-2 rounded-2xl text-base lg:text-lg font-black hidden">
+                ⏱️ <span id="sessionTime">00:00</span> |
+                💰 Sesión: <span id="sessionBankroll">$0</span> |
+                <span id="sessionBetLimit">Disponible: $0</span>
+            </div>
         </div>
-    </div>
 
-    <div class="flex items-center gap-2 header-buttons">
-        <button id="endSessionBtn" onclick="endSession()" 
-                class="bg-red-500 hover:bg-red-400 px-4 py-2 rounded-xl font-bold text-lg transition shadow-lg hidden">
-            TERMINAR SESIÓN
-        </button>
+        <div class="flex items-center gap-2 header-buttons">
+            <button id="endSessionBtn" onclick="endSession()"
+                    class="bg-red-500 hover:bg-red-400 px-4 py-2 rounded-xl font-bold text-base lg:text-lg transition shadow-lg hidden">
+                TERMINAR SESIÓN
+            </button>
 
-        <button id="statsBtn" onclick="toggleStats()" 
-                class="stats-btn px-3 py-2 rounded-xl font-bold text-sm transition shadow-lg hidden">
-            📊 STATS
-        </button>
-    </div>
+            <button id="statsBtn" onclick="toggleStats()"
+                    class="stats-btn px-3 py-2 rounded-xl font-bold text-sm transition shadow-lg hidden">
+                📊 STATS
+            </button>
+        </div>
 
-    <div class="bg-yellow-400 text-black px-5 py-2 rounded-2xl font-black text-lg shadow-2xl">
-        💰 Cuenta: <span id="saldoHeader"><?= number_format($saldo, 2) ?></span>$
+        <div class="header-balance flex justify-center">
+            <div class="bg-yellow-400 text-black px-5 py-2 rounded-2xl font-black text-base lg:text-lg shadow-2xl">
+                💰 Cuenta: <span id="saldoHeader"><?= number_format($saldo, 2) ?></span>$
+            </div>
+        </div>
+
     </div>
 </header>
 
-<div id="casinoAlert" class="hidden fixed top-24 left-1/2 -translate-x-1/2 z-[99999] bg-red-500 text-white px-6 py-3 rounded-2xl text-xl font-bold shadow-2xl"></div>
+<div id="casinoAlert" class="hidden fixed top-24 left-1/2 -translate-x-1/2 z-[99999] bg-red-500 text-white px-6 py-3 rounded-2xl text-lg sm:text-xl font-bold shadow-2xl max-w-[calc(100vw-1rem)] text-center"></div>
 
 <div id="statsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
     <div class="modal-overlay absolute inset-0" onclick="toggleStats()"></div>
 
-    <div class="bg-zinc-900 border-4 border-yellow-500 rounded-3xl p-8 w-full max-w-md max-h-[80vh] overflow-y-auto relative shadow-2xl">
+    <div class="bg-zinc-900 border-4 border-yellow-500 rounded-3xl p-5 sm:p-8 w-full max-w-md max-h-[80vh] overflow-y-auto relative shadow-2xl">
         <button onclick="toggleStats()" class="absolute top-4 right-4 text-3xl font-bold text-white hover:text-yellow-400">×</button>
 
-        <h2 class="text-3xl font-black text-yellow-400 text-center mb-6">📊 ESTADÍSTICAS SESIÓN</h2>
+        <h2 class="text-2xl sm:text-3xl font-black text-yellow-400 text-center mb-6">📊 ESTADÍSTICAS SESIÓN</h2>
 
-        <div class="space-y-4 text-lg">
+        <div class="space-y-4 text-base sm:text-lg">
             <div class="grid grid-cols-2 gap-4 bg-zinc-800 p-4 rounded-2xl">
                 <div class="text-center">
                     <div class="text-3xl font-black text-green-400" id="winsCount">0</div>
@@ -277,54 +726,74 @@ body {
     </div>
 </div>
 
-<div id="startScreen" class="fixed inset-0 bg-black/95 z-[99999] flex items-center justify-center">
-    <div class="bg-zinc-900 border-4 border-yellow-400 rounded-3xl p-8 w-[90%] max-w-md text-center shadow-2xl animate-pulse">
-        <div class="text-5xl font-black text-yellow-400 mb-6">🎰 CASINO LIVE</div>
+<div id="startScreen" class="fixed inset-0 bg-black/95 z-[99999] flex items-center justify-center p-4">
+    <div class="start-card bg-zinc-900 border-4 border-yellow-400 rounded-3xl p-5 sm:p-8 w-full max-w-md text-center shadow-2xl">
+        <div class="text-4xl sm:text-5xl font-black text-yellow-400 mb-6">🎰 CASINO LIVE</div>
 
         <p class="text-zinc-400 mb-2 text-lg">Saldo disponible en cuenta:</p>
-        <div class="text-4xl font-black mb-6 text-green-400"><?= number_format($saldo, 2) ?>$</div>
-        
+        <div class="text-3xl sm:text-4xl font-black mb-6 text-green-400"><?= number_format($saldo, 2) ?>$</div>
+
         <input id="bankroll" type="number" placeholder="Dinero para la sesión" min="1" max="<?= htmlspecialchars((string) $saldo) ?>"
-               class="w-full bg-zinc-800 rounded-xl p-4 mb-4 text-white outline-none border-2 border-zinc-700 focus:border-yellow-400 text-2xl text-center font-bold">
-        
-        <select id="time" class="w-full bg-zinc-800 rounded-xl p-4 mb-6 text-white border-2 border-zinc-700 text-xl font-bold">
+               class="w-full bg-zinc-800 rounded-xl p-4 mb-4 text-white outline-none border-2 border-zinc-700 focus:border-yellow-400 text-xl sm:text-2xl text-center font-bold">
+
+        <select id="time" class="w-full bg-zinc-800 rounded-xl p-4 mb-6 text-white border-2 border-zinc-700 text-lg sm:text-xl font-bold">
             <option value="1800">⏱️ 30 minutos</option>
             <option value="3600">⏱️ 1 hora</option>
             <option value="7200">⏱️ 2 horas</option>
         </select>
-        
-        <button onclick="confirmSession()" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 py-5 rounded-2xl text-2xl font-black transition-all duration-300 shadow-2xl border-4 border-green-400 transform hover:scale-105">
+
+        <button onclick="confirmSession()" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 py-4 sm:py-5 rounded-2xl text-xl sm:text-2xl font-black transition-all duration-300 shadow-2xl border-4 border-green-400 transform hover:scale-105">
             🚀 COMENZAR SESIÓN
         </button>
-        
+
         <p id="error" class="text-red-500 mt-4 font-bold text-lg hidden"></p>
     </div>
 </div>
 
-<main id="gameTable" class="relative z-10 h-screen pt-24 hidden">
+<main id="gameTable" class="relative z-10 hidden">
     <div class="game-container">
-        <div class="flex justify-between px-8 text-xl font-bold">
+
+        <div class="score-row flex justify-between px-8 text-xl font-bold">
             <div id="dealerScoreTop">🃏 CRUPIER: ?</div>
             <div id="playerScoreTop">👤 JUGADOR: ?</div>
         </div>
 
         <div class="game-board">
+
             <div class="dealer-section">
-                <h2 class="text-2xl font-black mb-4 text-left">🃏 CRUPIER</h2>
+                <h2 class="text-2xl font-black mb-4 text-center lg:text-left">🃏 CRUPIER</h2>
                 <div id="dealerCards" class="cards-container"></div>
             </div>
 
             <div class="center-section">
-                <div id="gameResult" class="text-3xl font-black h-20 mb-4 text-center"></div>
-                
-                <div id="dropZone" class="w-72 h-72 rounded-full border-8 border-dashed border-green-400 flex flex-col items-center justify-center text-center shadow-[0_0_40px_rgba(34,197,94,0.5)] transition-all duration-300 hover:scale-105 cursor-pointer p-8">
+                <div id="gameResult" class="result-text text-3xl font-black text-center"></div>
+
+                <div id="dropZone" class="drop-zone w-72 h-72 rounded-full border-8 border-dashed border-green-400 flex flex-col items-center justify-center text-center transition-all duration-300 cursor-pointer p-8">
                     <div class="text-2xl font-black mb-4">APUESTA</div>
 
                     <div class="text-5xl font-black text-yellow-400 mb-4">
                         $<span id="betAmount">0</span>
                     </div>
 
-                    <div id="betLimit" class="text-lg text-zinc-400 font-bold">Disponible: $0</div>
+                    <div id="betLimit" class="text-lg text-zinc-300 font-bold">Disponible: $0</div>
+                </div>
+
+                <div class="bottom-section">
+                    <div id="bottomResult" class="bottom-result text-4xl font-black text-center"></div>
+
+                    <div class="action-buttons">
+                        <button id="dealBtn" onclick="deal()" class="btn-casino btn-deal disabled:opacity-50 disabled:cursor-not-allowed">
+                            🎲 REPARTIR
+                        </button>
+
+                        <button id="hitBtn" onclick="hit()" class="btn-casino btn-hit disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                            HIT ➕
+                        </button>
+
+                        <button id="standBtn" onclick="stand()" class="btn-casino btn-stand disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                            STAND 🛑
+                        </button>
+                    </div>
                 </div>
 
                 <div class="chips-container">
@@ -339,27 +808,10 @@ body {
             </div>
 
             <div class="player-section">
-                <h2 class="text-2xl font-black mb-4 text-right">👤 JUGADOR</h2>
+                <h2 class="text-2xl font-black mb-4 text-center lg:text-right">👤 JUGADOR</h2>
                 <div id="playerCards" class="cards-container"></div>
             </div>
-        </div>
 
-        <div class="bottom-section">
-            <div id="bottomResult" class="text-4xl font-black h-16 mb-4"></div>
-            
-            <div class="flex gap-4">
-                <button id="dealBtn" onclick="deal()" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 px-16 py-6 rounded-3xl text-3xl font-black shadow-2xl transition-all duration-300 text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none">
-                    🎲 REPARTIR
-                </button>
-
-                <button id="hitBtn" onclick="hit()" class="bg-gradient-to-r from-yellow-500 to-yellow-400 hover:from-yellow-400 hover:to-yellow-300 px-12 py-6 rounded-3xl text-2xl font-black shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all hidden">
-                    HIT ➕
-                </button>
-
-                <button id="standBtn" onclick="stand()" class="bg-gradient-to-r from-red-500 to-red-400 hover:from-red-400 hover:to-red-300 px-12 py-6 rounded-3xl text-2xl font-black shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all hidden">
-                    STAND 🛑
-                </button>
-            </div>
         </div>
     </div>
 </main>
@@ -390,7 +842,7 @@ let stats = {
 };
 
 async function gameSessionApi(action, data = {}) {
-    const response = await fetch(`api_sesion_juego.php?action=${action}`, {
+    const response = await fetch("api_sesion_juego.php?action=" + encodeURIComponent(action), {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -542,28 +994,28 @@ function updateSessionTimer() {
             showAlert("⏰ Tiempo agotado. Termina la mano actual.");
         }
 
-        if (!gameActive && !gameFinished) {
+        if (!gameActive && !gameFinished)        {
             endSession(true);
         }
 
         return;
     }
 
-        const minutes = Math.floor(remaining / 60);
+    const minutes = Math.floor(remaining / 60);
     const seconds = remaining % 60;
 
     document.getElementById("sessionTime").textContent =
-        `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
 }
 
 function updateSessionDisplay() {
-    document.getElementById("sessionBankroll").textContent = `$${sessionBankroll.toFixed(2)}`;
-    document.getElementById("sessionBetLimit").textContent = `Disponible: $${sessionBetLimit.toFixed(2)}`;
+    document.getElementById("sessionBankroll").textContent = "$" + sessionBankroll.toFixed(2);
+    document.getElementById("sessionBetLimit").textContent = "Disponible: $" + sessionBetLimit.toFixed(2);
 }
 
 function updateBetDisplay() {
     document.getElementById("betAmount").textContent = bet.toFixed(2);
-    document.getElementById("betLimit").textContent = `Disponible: $${sessionBetLimit.toFixed(2)}`;
+    document.getElementById("betLimit").textContent = "Disponible: $" + sessionBetLimit.toFixed(2);
 
     const dropZone = document.getElementById("dropZone");
     dropZone.classList.remove("bet-active", "bet-max");
@@ -583,22 +1035,26 @@ function resetBet() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".chip").forEach(chip => {
-        chip.addEventListener("dragstart", e => {
+    document.querySelectorAll(".chip").forEach(function (chip) {
+        chip.addEventListener("dragstart", function (e) {
             e.dataTransfer.setData("value", chip.dataset.value);
+        });
+
+        chip.addEventListener("click", function () {
+            addChipValue(parseFloat(chip.dataset.value));
         });
     });
 
     const dropZone = document.getElementById("dropZone");
-    dropZone.addEventListener("dragover", e => e.preventDefault());
+    dropZone.addEventListener("dragover", function (e) {
+        e.preventDefault();
+    });
     dropZone.addEventListener("drop", handleDrop);
 
     checkExistingGameSession();
 });
 
-function handleDrop(e) {
-    e.preventDefault();
-
+function addChipValue(value) {
     if (!sessionActive) {
         showAlert("🎮 Inicia sesión primero");
         return;
@@ -609,8 +1065,6 @@ function handleDrop(e) {
         return;
     }
 
-    const value = parseFloat(e.dataTransfer.getData("value"));
-
     if (isNaN(value) || value <= 0) {
         showAlert("Ficha inválida");
         return;
@@ -619,12 +1073,19 @@ function handleDrop(e) {
     const newBet = bet + value;
 
     if (newBet > sessionBetLimit) {
-        showAlert(`💰 Máximo disponible $${sessionBetLimit.toFixed(2)}`);
+        showAlert("💰 Máximo disponible $" + sessionBetLimit.toFixed(2));
         return;
     }
 
     bet = newBet;
     updateBetDisplay();
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+
+    const value = parseFloat(e.dataTransfer.getData("value"));
+    addChipValue(value);
 }
 
 function updateStats(result, betAmount, winAmount = 0) {
@@ -646,15 +1107,15 @@ function updateStats(result, betAmount, winAmount = 0) {
 function updateStatsDisplay() {
     document.getElementById("winsCount").textContent = stats.wins;
     document.getElementById("lossesCount").textContent = stats.losses;
-    document.getElementById("totalBets").textContent = `$${stats.totalBets.toFixed(2)}`;
-    document.getElementById("totalWins").textContent = `$${stats.totalWins.toFixed(2)}`;
-    document.getElementById("totalLosses").textContent = `$${stats.totalLosses.toFixed(2)}`;
+    document.getElementById("totalBets").textContent = "$" + stats.totalBets.toFixed(2);
+    document.getElementById("totalWins").textContent = "$" + stats.totalWins.toFixed(2);
+    document.getElementById("totalLosses").textContent = "$" + stats.totalLosses.toFixed(2);
 
     const net = stats.totalWins - stats.totalLosses;
 
-    document.getElementById("netProfit").textContent = `$${net.toFixed(2)}`;
+    document.getElementById("netProfit").textContent = "$" + net.toFixed(2);
     document.getElementById("netProfit").className =
-        `text-3xl font-black ${net >= 0 ? "text-green-400" : "text-red-500"}`;
+        "text-3xl font-black " + (net >= 0 ? "text-green-400" : "text-red-500");
 }
 
 function toggleStats() {
@@ -718,28 +1179,32 @@ function card() {
     const values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
     const suits = ["corazones", "diamantes", "trebol", "picas"];
 
-    return `${values[Math.floor(Math.random() * values.length)]}-${suits[Math.floor(Math.random() * suits.length)]}.png`;
+    return values[Math.floor(Math.random() * values.length)] + "-" +
+        suits[Math.floor(Math.random() * suits.length)] + ".png";
 }
 
 function createCard(src) {
-    return `
-        <div class="card deal-anim">
-            <img src="img/cards/${src}" class="w-full h-full object-cover rounded-lg">
-        </div>
-    `;
+    return '<div class="card deal-anim">' +
+        '<img src="img/cards/' + src + '" class="w-full h-full object-cover rounded-lg" alt="Carta de blackjack">' +
+        '</div>';
 }
 
 function updateScores() {
     const playerValue = getHandValue(player);
     const dealerValue = getHandValue(dealer);
 
-    document.getElementById("playerScoreTop").textContent = `👤 JUGADOR: ${playerValue}`;
-    document.getElementById("dealerScoreTop").textContent = `🃏 CRUPIER: ${dealerValue}`;
+    document.getElementById("playerScoreTop").textContent = "👤 JUGADOR: " + playerValue;
+    document.getElementById("dealerScoreTop").textContent = "🃏 CRUPIER: " + dealerValue;
 }
 
 function renderCards() {
-    document.getElementById("playerCards").innerHTML = player.map(c => createCard(c)).join("");
-    document.getElementById("dealerCards").innerHTML = dealer.map(c => createCard(c)).join("");
+    document.getElementById("playerCards").innerHTML = player.map(function (c) {
+        return createCard(c);
+    }).join("");
+
+    document.getElementById("dealerCards").innerHTML = dealer.map(function (c) {
+        return createCard(c);
+    }).join("");
 
     updateScores();
 }
@@ -756,7 +1221,11 @@ function resetGameState() {
     document.getElementById("gameResult").innerHTML = "";
     document.getElementById("bottomResult").innerHTML = "";
 
+    document.getElementById("gameResult").className = "result-text text-3xl font-black text-center";
+    document.getElementById("bottomResult").className = "bottom-result text-4xl font-black text-center";
+
     document.getElementById("dealBtn").disabled = !sessionActive;
+    document.getElementById("dealBtn").classList.remove("hidden");
 
     document.getElementById("hitBtn").disabled = true;
     document.getElementById("hitBtn").classList.add("hidden");
@@ -783,7 +1252,7 @@ async function deal() {
     }
 
     if (bet > sessionBetLimit) {
-        showAlert(`❌ Máximo disponible: $${sessionBetLimit.toFixed(2)}`);
+        showAlert("❌ Máximo disponible: $" + sessionBetLimit.toFixed(2));
         return;
     }
 
@@ -797,6 +1266,7 @@ async function deal() {
             amount: bet,
             game: "blackjack"
         });
+
         if (!data.ok) {
             showAlert(data.message || "No se pudo realizar la apuesta");
 
@@ -822,6 +1292,7 @@ async function deal() {
     dealer = [card(), card()];
 
     document.getElementById("dealBtn").disabled = true;
+    document.getElementById("dealBtn").classList.add("hidden");
 
     document.getElementById("hitBtn").disabled = false;
     document.getElementById("hitBtn").classList.remove("hidden");
@@ -831,7 +1302,7 @@ async function deal() {
 
     renderCards();
 
-    setTimeout(() => {
+    setTimeout(function () {
         if (isBlackjack(player)) {
             dealerPlay();
         }
@@ -865,7 +1336,9 @@ function dealerPlay() {
         renderCards();
     }
 
-    setTimeout(() => finishGame(), 800);
+    setTimeout(function () {
+        finishGame();
+    }, 800);
 }
 
 async function finishGame() {
@@ -888,27 +1361,27 @@ async function finishGame() {
     let multiplier = 0;
 
     if (playerValue > 21) {
-        finalResult = `💀 PASASTE (${playerValue})`;
+        finalResult = "💀 PASASTE (" + playerValue + ")";
         resultForServer = "loss";
         multiplier = 0;
 
     } else if (dealerValue > 21) {
-        finalResult = `🎉 DEALER PASÓ (${dealerValue})!`;
+        finalResult = "🎉 DEALER PASÓ (" + dealerValue + ")!";
         resultForServer = "win";
         multiplier = isBlackjack(player) ? 2.5 : 2;
 
     } else if (playerValue > dealerValue) {
-        finalResult = `🎉 ¡VICTORIA! ${playerValue} vs ${dealerValue}`;
+        finalResult = "🎉 ¡VICTORIA! " + playerValue + " vs " + dealerValue;
         resultForServer = "win";
         multiplier = isBlackjack(player) ? 2.5 : 2;
 
     } else if (playerValue < dealerValue) {
-        finalResult = `💀 DERROTA ${playerValue} vs ${dealerValue}`;
+        finalResult = "💀 DERROTA " + playerValue + " vs " + dealerValue;
         resultForServer = "loss";
         multiplier = 0;
 
     } else {
-        finalResult = `🤝 EMPATE ${playerValue}`;
+        finalResult = "🤝 EMPATE " + playerValue;
         resultForServer = "tie";
         multiplier = 1;
     }
@@ -936,33 +1409,33 @@ async function finishGame() {
         const won = bet * multiplier;
 
         document.getElementById("gameResult").innerHTML = finalResult;
-        document.getElementById("gameResult").className = "text-3xl font-black h-20 mb-4 text-green-400 animate-pulse";
+        document.getElementById("gameResult").className = "result-text text-3xl font-black text-green-400 animate-pulse text-center";
 
         document.getElementById("bottomResult").innerHTML = "¡GANASTE!";
-        document.getElementById("bottomResult").className = "text-4xl font-black h-16 mb-4 text-green-400 animate-pulse";
+        document.getElementById("bottomResult").className = "bottom-result text-4xl font-black text-green-400 animate-pulse text-center";
 
         updateStats("win", bet, won);
 
     } else if (resultForServer === "loss") {
         document.getElementById("gameResult").innerHTML = finalResult;
-        document.getElementById("gameResult").className = "text-3xl font-black h-20 mb-4 text-red-500 animate-pulse";
+        document.getElementById("gameResult").className = "result-text text-3xl font-black text-red-500 animate-pulse text-center";
 
         document.getElementById("bottomResult").innerHTML = "¡PERDISTE!";
-        document.getElementById("bottomResult").className = "text-4xl font-black h-16 mb-4 text-red-500 animate-pulse";
+        document.getElementById("bottomResult").className = "bottom-result text-4xl font-black text-red-500 animate-pulse text-center";
 
         updateStats("loss", bet);
 
     } else {
         document.getElementById("gameResult").innerHTML = finalResult;
-        document.getElementById("gameResult").className = "text-3xl font-black h-20 mb-4 text-yellow-400 animate-pulse";
+        document.getElementById("gameResult").className = "result-text text-3xl font-black text-yellow-400 animate-pulse text-center";
 
         document.getElementById("bottomResult").innerHTML = "¡EMPATE!";
-        document.getElementById("bottomResult").className = "text-4xl font-black h-16 mb-4 text-yellow-400 animate-pulse";
+        document.getElementById("bottomResult").className = "bottom-result text-4xl font-black text-yellow-400 animate-pulse text-center";
 
         updateStats("tie", bet);
     }
 
-    setTimeout(() => {
+    setTimeout(function () {
         resetGameState();
 
         if (sessionExpiredAlertShown) {
@@ -980,7 +1453,7 @@ function showAlert(msg) {
     alertBox.innerText = msg;
     alertBox.classList.remove("hidden");
 
-    setTimeout(() => {
+    setTimeout(function () {
         alertBox.classList.add("hidden");
     }, 3000);
 }
@@ -995,11 +1468,6 @@ function goHome() {
         return;
     }
 
-    /*
-        Ir a principal NO cierra sesión.
-        La sesión sirve para todos los juegos.
-        Para devolver el saldo de sesión al saldo real, usa TERMINAR SESIÓN.
-    */
     window.location.href = "principal.php";
 }
 </script>
