@@ -864,11 +864,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </li>
 
                 <li>
-                    <img src="img/pulislot.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    <img src="img/ruleta.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
                 </li>
 
                 <li>
                     <img src="img/slingo.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                </li>
+                <li>
+                    <img src="img/mines.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
                 </li>
 
             </ul>
@@ -919,7 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </p>
 
                     <div class="text-2xl font-black">
-                        STUNNINGSTONES
+                        SLOT MACHINE
                     </div>
                 </div>
             </div>
@@ -943,7 +946,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div onclick="window.location.href='ruleta.php'"
                  class="game-card cursor-pointer bg-zinc-900/85 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.03] transition-all duration-300 border border-white/10">
 
-                <img src="img/frog.png" class="w-full h-64 object-cover">
+                <img src="img/ruleta.png" class="w-full h-64 object-cover">
 
                 <div class="absolute bottom-0 left-0 right-0 p-5 z-10">
                     <p class="text-yellow-400 font-black text-sm uppercase tracking-widest">
