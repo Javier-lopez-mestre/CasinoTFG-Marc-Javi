@@ -25,6 +25,7 @@ $saldo = isset($row['saldo']) ? (float) $row['saldo'] : 0;
 
 <title>Minas Casino</title>
 
+<link rel="icon" type="image/png" href="img/logocuadrado.png">
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>

@@ -25,6 +25,8 @@ $saldo = isset($row['saldo']) ? (float) $row['saldo'] : 0;
 
 <title>Ruleta</title>
 
+<link rel="icon" type="image/png" href="img/logocuadrado.png">
+
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
@@ -93,6 +95,14 @@ button {
     grid-template-columns: 1fr auto 1fr;
     gap: 0.75rem;
     align-items: center;
+}
+
+.header-logo {
+    height: 60px;
+    width: auto;
+    max-width: 100px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(250, 204, 21, 0.3));
 }
 
 .header-left,
@@ -978,6 +988,7 @@ button {
     <div class="header-inner">
 
         <div class="header-left">
+            <img src="img/logocuadrado.png" alt="Logo" class="header-logo">
             <button onclick="goHome()" class="header-btn">
                 🏠 Principal
             </button>

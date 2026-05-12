@@ -144,6 +144,7 @@ if (!empty($datos_usuario['nombre'])) {
 
 <title>HIGH STAKES</title>
 
+<link rel="icon" type="image/png" href="img/logocuadrado.png">
 <!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
 

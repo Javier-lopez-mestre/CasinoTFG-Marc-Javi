@@ -205,6 +205,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <title>Registro - High Stakes</title>
 
+<link rel="icon" type="image/png" href="img/logocuadrado.png">
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>

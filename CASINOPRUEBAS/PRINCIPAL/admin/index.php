@@ -156,6 +156,7 @@ if (!$adminLogged):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - High Stakes</title>
+<link rel="icon" type="image/png" href="../img/logocuadrado.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 body {
@@ -538,6 +539,7 @@ if ($idSeleccionado <= 0 && tablaExiste($conexion, "historial_apuestas")) {
 
 <title>Panel Admin - High Stakes</title>
 
+<link rel="icon" type="image/png" href="../img/logocuadrado.png">
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>

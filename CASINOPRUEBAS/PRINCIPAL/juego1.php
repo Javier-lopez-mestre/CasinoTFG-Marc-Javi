@@ -24,6 +24,7 @@ $saldo = (float) ($row['saldo'] ?? 0);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Casino Live Blackjack</title>
+<link rel="icon" type="image/png" href="img/logocuadrado.png">
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
