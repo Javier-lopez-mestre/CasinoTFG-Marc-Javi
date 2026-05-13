@@ -648,13 +648,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <div id="perfil-container" class="relative">
                 <button onclick="togglePerfil()"
                         class="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 px-5 py-3 rounded-2xl font-black shadow-2xl transition-all duration-200 border border-blue-300/20">
-
-                    <svg class="w-5 h-5" fill="none" stroke="currentI'm sorry, but I cannot assist with that request.Color" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
-                        </path>
-                    </svg>
-
                     Perfil
                 </button>
 
@@ -857,22 +850,26 @@ document.addEventListener('DOMContentLoaded', () => {
             <ul class="slider">
 
                 <li>
-                    <img src="img/frog.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    <a href="blackjack.php" class="block cursor-pointer hover:opacity-80 transition-opacity duration-200">
+                        <img src="img/blackjack.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    </a>
                 </li>
 
                 <li>
-                    <img src="img/777.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    <a href="tragaperras.php" class="block cursor-pointer hover:opacity-80 transition-opacity duration-200">
+                        <img src="img/777.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    </a>
                 </li>
 
                 <li>
-                    <img src="img/ruleta.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
-                </li>
-
-                <li>
-                    <img src="img/slingo.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    <a href="minas.php" class="block cursor-pointer hover:opacity-80 transition-opacity duration-200">
+                        <img src="img/mines.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    </a>
                 </li>
                 <li>
-                    <img src="img/mines.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    <a href="ruleta.php" class="block cursor-pointer hover:opacity-80 transition-opacity duration-200">
+                        <img src="img/ruleta.png" class="w-full h-44 sm:h-60 lg:h-72 object-cover rounded-3xl border border-yellow-400/20">
+                    </a>
                 </li>
 
             </ul>
@@ -896,7 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            <div onclick="window.location.href='juego1.php'"
+            <div onclick="window.location.href='blackjack.php'"
                  class="game-card cursor-pointer bg-zinc-900/85 backdrop-blur-lg rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.03] transition-all duration-300 border border-white/10">
 
                 <img src="img/blackjack.png" class="w-full h-64 object-cover">
