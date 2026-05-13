@@ -112,14 +112,148 @@ body {
     }
 }
 
-@media(max-width:768px) {
+@media(max-width: 768px) {
+    main#gameTable {
+        padding-top: 1rem !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        padding-bottom: 1rem !important;
+        min-height: auto;
+    }
+
+    section.max-w-7xl {
+        margin-top: 3rem !important;
+    }
+
+    h1 {
+        font-size: 2rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .grid.grid-cols-1 {
+        gap: 1rem !important;
+    }
+
+    aside {
+        padding: 1rem !important;
+        border-radius: 1.5rem !important;
+    }
+
     .mine-board {
-        gap: 4px;
+        gap: 0.5rem !important;
+        max-width: 100% !important;
     }
 
     .mine-cell {
-        border-radius: 8px;
-        font-size: 12px;
+        border-radius: 0.75rem !important;
+        font-size: 1rem !important;
+        aspect-ratio: 1 / 1;
+    }
+
+    button {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
+        border-radius: 0.75rem !important;
+    }
+}
+
+@media(max-width: 430px) {
+    main#gameTable {
+        padding-top: 6rem !important;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    section.max-w-7xl {
+        margin: 0.5rem auto !important;
+    }
+
+    h1 {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.75rem !important;
+        font-weight: 900 !important;
+    }
+
+    .grid.grid-cols-1 {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+
+    aside {
+        padding: 0.75rem !important;
+        border-radius: 1rem !important;
+        height: auto !important;
+    }
+
+    aside h2 {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    aside div {
+        font-size: 0.85rem !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.2 !important;
+    }
+
+    .mine-board {
+        gap: 0.35rem !important;
+        max-width: 100% !important;
+    }
+
+    .mine-cell {
+        border-radius: 0.6rem !important;
+        font-size: 0.9rem !important;
+        border-width: 1px !important;
+        aspect-ratio: 1 / 1;
+    }
+
+    button {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        border-radius: 0.6rem !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+    }
+
+    header {
+        height: auto !important;
+        flex-wrap: wrap !important;
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+    }
+
+    header button {
+        padding: 0.3rem 0.5rem !important;
+        font-size: 0.65rem !important;
+        border-radius: 0.5rem !important;
+    }
+
+    .bg-yellow-400 {
+        font-size: 0.7rem !important;
+        padding: 0.3rem 0.6rem !important;
+    }
+
+    .session-counter {
+        font-size: 0.6rem !important;
+        padding: 0.3rem 0.5rem !important;
+    }
+
+    #startScreen > div > div:first-child {
+        font-size: 2rem !important;
+        line-height: 1.2 !important;
+    }
+
+    #startScreen input,
+    #startScreen select {
+        padding: 0.5rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    #startScreen button {
+        padding: 0.75rem !important;
+        font-size: 1rem !important;
     }
 }
 </style>
