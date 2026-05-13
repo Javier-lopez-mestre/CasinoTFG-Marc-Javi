@@ -7,7 +7,7 @@ session_start();
 
 include("../conexion.php");
 
-$ADMIN_USER = "hightstakes";
+$ADMIN_USER = "highstakes";
 $ADMIN_PASS = "superlocal";
 
 function escapar($valor) {
