@@ -832,6 +832,7 @@ let player = [];
 let dealer = [];
 let gameActive = false;
 let gameFinished = false;
+let dealerHiddenCard = true;
 
 let stats = {
     wins: 0,
@@ -1192,7 +1193,12 @@ function createCard(src) {
 
 function updateScores() {
     const playerValue = getHandValue(player);
-    const dealerValue = getHandValue(dealer);
+    let dealerValue = getHandValue(dealer);
+
+    // Si la segunda carta del dealer está oculta, mostrar solo el valor de la primera carta
+    if (dealerHiddenCard && dealer.length > 1) {
+        dealerValue = getCardValue(dealer[0]);
+    }
 
     document.getElementById("playerScoreTop").textContent = "👤 JUGADOR: " + playerValue;
     document.getElementById("dealerScoreTop").textContent = "🃏 CRUPIER: " + dealerValue;
@@ -1203,9 +1209,16 @@ function renderCards() {
         return createCard(c);
     }).join("");
 
-    document.getElementById("dealerCards").innerHTML = dealer.map(function (c) {
-        return createCard(c);
-    }).join("");
+    let dealerCardsHtml = "";
+    for (let i = 0; i < dealer.length; i++) {
+        // Si es la segunda carta y debe estar oculta, mostrar cartaDetras.png
+        if (i === 1 && dealerHiddenCard) {
+            dealerCardsHtml += createCard("cartaDetras.png");
+        } else {
+            dealerCardsHtml += createCard(dealer[i]);
+        }
+    }
+    document.getElementById("dealerCards").innerHTML = dealerCardsHtml;
 
     updateScores();
 }
@@ -1215,6 +1228,7 @@ function resetGameState() {
     dealer = [];
     gameActive = false;
     gameFinished = false;
+    dealerHiddenCard = true;
     bet = 0;
 
     document.getElementById("playerCards").innerHTML = "";
@@ -1332,14 +1346,20 @@ function stand() {
 }
 
 function dealerPlay() {
-    while (getHandValue(dealer) < 17) {
-        dealer.push(card());
-        renderCards();
-    }
+    // Mostrar la segunda carta del dealer
+    dealerHiddenCard = false;
+    renderCards();
 
     setTimeout(function () {
-        finishGame();
-    }, 800);
+        while (getHandValue(dealer) < 17) {
+            dealer.push(card());
+            renderCards();
+        }
+
+        setTimeout(function () {
+            finishGame();
+        }, 800);
+    }, 600);
 }
 
 async function finishGame() {
