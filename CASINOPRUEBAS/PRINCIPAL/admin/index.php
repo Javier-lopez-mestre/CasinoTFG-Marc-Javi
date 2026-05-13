@@ -194,7 +194,7 @@ body {
             <label class="block text-zinc-300 font-bold mb-2">Contraseña</label>
             <input type="password" name="password"
                    class="w-full bg-zinc-800 border-2 border-zinc-700 focus:border-yellow-400 rounded-xl p-4 outline-none text-white font-bold"
-                   placeholder="superlocal">
+                   placeholder="********">
         </div>
 
         <button type="submit"
