@@ -97,6 +97,254 @@ body {
         box-shadow: 0 0 80px rgba(239,68,68,1);
     }
 }
+
+@media(max-width: 768px) {
+    main#gameTable {
+        padding-top: 1rem !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        padding-bottom: 1rem !important;
+        min-height: auto;
+    }
+
+    section.max-w-5xl {
+        margin-top: 3rem !important;
+    }
+
+    h1 {
+        font-size: 1.75rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    #slotMachine {
+        border-width: 5px !important;
+        padding: 1rem !important;
+        max-width: 100% !important;
+    }
+
+    .grid.grid-cols-3 {
+        gap: 0.75rem !important;
+    }
+
+    .reel {
+        height: 100px !important;
+        font-size: 2.5rem !important;
+        border-radius: 1rem !important;
+    }
+
+    #resultText {
+        height: auto !important;
+        font-size: 1.125rem !important;
+        margin-bottom: 1rem !important;
+        min-height: 40px !important;
+        line-height: 1.25 !important;
+    }
+
+    .bg-black\/50 {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+        border-radius: 1rem !important;
+    }
+
+    label {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    #betInput {
+        padding: 0.75rem !important;
+        font-size: 1rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    #availableText {
+        font-size: 0.8rem !important;
+        margin-top: 0.5rem !important;
+    }
+
+    .flex.flex-wrap.justify-center.gap-2 {
+        gap: 0.5rem !important;
+        margin-bottom: 1rem !important;
+        flex-wrap: wrap !important;
+    }
+
+    .flex.flex-wrap button {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    #spinBtn {
+        padding: 0.875rem 1.5rem !important;
+        font-size: 1.125rem !important;
+        border-radius: 1rem !important;
+        width: 100% !important;
+    }
+
+    .mt-8 {
+        margin-top: 1.5rem !important;
+    }
+
+    .mt-8 h2 {
+        font-size: 1.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .grid.grid-cols-1 {
+        gap: 0.75rem !important;
+        font-size: 0.95rem !important;
+    }
+}
+
+@media(max-width: 430px) {
+    main#gameTable {
+        padding-top: 6rem !important;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    section.max-w-5xl {
+        margin: 0.5rem auto !important;
+    }
+
+    h1 {
+        font-size: 1.25rem !important;
+        margin-bottom: 0.5rem !important;
+        font-weight: 900 !important;
+    }
+
+    #slotMachine {
+        border-width: 4px !important;
+        padding: 0.75rem !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+    }
+
+    .grid.grid-cols-3 {
+        gap: 0.5rem !important;
+    }
+
+    .reel {
+        height: 70px !important;
+        font-size: 2rem !important;
+        border-radius: 0.75rem !important;
+        padding: 0.5rem !important;
+    }
+
+    #resultText {
+        height: auto !important;
+        font-size: 0.95rem !important;
+        margin-bottom: 0.75rem !important;
+        min-height: 32px !important;
+    }
+
+    .bg-black\/50 {
+        padding: 0.75rem !important;
+        margin-bottom: 0.75rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    label {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.25rem !important;
+        display: block !important;
+    }
+
+    #betInput {
+        padding: 0.5rem !important;
+        font-size: 0.9rem !important;
+        border-radius: 0.5rem !important;
+        width: 100% !important;
+    }
+
+    #availableText {
+        font-size: 0.65rem !important;
+        margin-top: 0.25rem !important;
+    }
+
+    .flex.flex-wrap.justify-center.gap-2 {
+        gap: 0.25rem !important;
+        margin-bottom: 0.75rem !important;
+        flex-wrap: wrap !important;
+    }
+
+    .flex.flex-wrap button {
+        padding: 0.4rem 0.6rem !important;
+        font-size: 0.65rem !important;
+        border-radius: 0.5rem !important;
+        flex: 1 1 auto !important;
+        min-width: 50px !important;
+    }
+
+    #spinBtn {
+        padding: 0.75rem 1rem !important;
+        font-size: 1rem !important;
+        border-radius: 0.75rem !important;
+        width: 100% !important;
+        font-weight: 900 !important;
+    }
+
+    .mt-8 {
+        margin-top: 1rem !important;
+    }
+
+    .mt-8 h2 {
+        font-size: 1.125rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .grid.grid-cols-1 {
+        gap: 0.5rem !important;
+        font-size: 0.85rem !important;
+    }
+
+    header {
+        height: auto !important;
+        flex-wrap: wrap !important;
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+    }
+
+    .header-inner {
+        flex-direction: row !important;
+        width: 100% !important;
+        gap: 0.5rem !important;
+        padding: 0 !important;
+    }
+
+    .flex.items-center.gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    .bg-yellow-400 {
+        font-size: 0.7rem !important;
+        padding: 0.3rem 0.6rem !important;
+    }
+
+    header button {
+        padding: 0.3rem 0.5rem !important;
+        font-size: 0.65rem !important;
+        border-radius: 0.5rem !important;
+        white-space: nowrap !important;
+    }
+
+    #endSessionBtn {
+        padding: 0.3rem 0.4rem !important;
+        font-size: 0.6rem !important;
+        white-space: nowrap !important;
+    }
+
+    .session-counter {
+        font-size: 0.6rem !important;
+        padding: 0.3rem 0.5rem !important;
+    }
+
+    #startScreen > div > div:first-child {
+        font-size: 2rem !important;
+        line-height: 1.2 !important;
+    }
+}
 </style>
 </head>
 
@@ -534,11 +782,11 @@ function animateSpin(finalSymbols) {
 function generateFinalSymbols() {
     /*
         - Total de victoria: ~20% 
-        - Muy difícil conseguir 3 estrellas y 3 seises (1% cada uno)
+        - Muy difícil conseguir 3 estrellas (0.5%)
     */
     const r = Math.random();
 
-    if (r < 0.01) {
+    if (r < 0.005) {
         return ["⭐", "⭐", "⭐"];
     }
 
