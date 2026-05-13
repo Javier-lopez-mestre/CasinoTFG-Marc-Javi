@@ -187,7 +187,7 @@ body {
             <label class="block text-zinc-300 font-bold mb-2">Usuario administrador</label>
             <input type="text" name="usuario" autocomplete="off"
                    class="w-full bg-zinc-800 border-2 border-zinc-700 focus:border-yellow-400 rounded-xl p-4 outline-none text-white font-bold"
-                   placeholder="hightstakes">
+                   placeholder="highstakes">
         </div>
 
         <div>
