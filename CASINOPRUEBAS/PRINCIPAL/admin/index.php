@@ -863,28 +863,28 @@ body {
 
                 <div class="bg-black/40 rounded-2xl p-4">
                     <p class="text-zinc-400 font-bold">Apuestas</p>
-                    <p class="text-3xl font-black text-purple-400">
+                    <p class="text-xl font-black text-purple-400">
                         <?= (int) ($estadisticasUsuario['total_apuestas'] ?? 0) ?>
                     </p>
                 </div>
 
                 <div class="bg-black/40 rounded-2xl p-4">
                     <p class="text-zinc-400 font-bold">Total apostado</p>
-                    <p class="text-3xl font-black text-yellow-400">
+                    <p class="text-xl font-black text-yellow-400">
                         $<?= dinero($estadisticasUsuario['total_apostado'] ?? 0) ?>
                     </p>
                 </div>
 
                 <div class="bg-black/40 rounded-2xl p-4">
                     <p class="text-zinc-400 font-bold">Total pagado</p>
-                    <p class="text-3xl font-black text-green-400">
+                    <p class="text-xl font-black text-green-400">
                         $<?= dinero($estadisticasUsuario['total_pagado'] ?? 0) ?>
                     </p>
                 </div>
 
                 <div class="bg-black/40 rounded-2xl p-4">
                     <p class="text-zinc-400 font-bold">Balance</p>
-                    <p class="text-3xl font-black <?= $gananciaBalance >= 0 ? 'text-green-400' : 'text-red-400' ?>">
+                    <p class="text-xl font-black <?= $gananciaBalance >= 0 ? 'text-green-400' : 'text-red-400' ?>">
                         <?= $gananciaBalance >= 0 ? '+' : '-' ?>$<?= dinero(abs($gananciaBalance)) ?>
                     </p>
                 </div>
@@ -1044,28 +1044,28 @@ body {
 
         <div class="bg-zinc-900/90 border border-yellow-400/30 rounded-2xl p-5">
             <p class="text-zinc-400 font-bold">Usuarios</p>
-            <p class="text-4xl font-black text-yellow-400">
+            <p class="text-2xl font-black text-yellow-400">
                 <?= (int) ($resumenGlobal['total_usuarios'] ?? 0) ?>
             </p>
         </div>
 
         <div class="bg-zinc-900/90 border border-green-400/30 rounded-2xl p-5">
             <p class="text-zinc-400 font-bold">Activos</p>
-            <p class="text-4xl font-black text-green-400">
+            <p class="text-2xl font-black text-green-400">
                 <?= (int) ($resumenGlobal['usuarios_activos'] ?? 0) ?>
             </p>
         </div>
 
         <div class="bg-zinc-900/90 border border-red-400/30 rounded-2xl p-5">
             <p class="text-zinc-400 font-bold">Bloqueados</p>
-            <p class="text-4xl font-black text-red-400">
+            <p class="text-2xl font-black text-red-400">
                 <?= (int) ($resumenGlobal['usuarios_suspendidos'] ?? 0) ?>
             </p>
         </div>
 
         <div class="bg-zinc-900/90 border border-blue-400/30 rounded-2xl p-5">
             <p class="text-zinc-400 font-bold">Saldo total</p>
-            <p class="text-4xl font-black text-blue-400">
+            <p class="text-2xl font-black text-blue-400">
                 $<?= dinero($resumenGlobal['saldo_total'] ?? 0) ?>
             </p>
         </div>
@@ -1076,21 +1076,21 @@ body {
 
         <div class="bg-zinc-900/90 border border-purple-400/30 rounded-2xl p-5">
             <p class="text-zinc-400 font-bold">Apuestas totales</p>
-            <p class="text-4xl font-black text-purple-400">
+            <p class="text-2xl font-black text-purple-400">
                 <?= (int) ($resumenHistorial['total_apuestas'] ?? 0) ?>
             </p>
         </div>
 
         <div class="bg-zinc-900/90 border border-yellow-400/30 rounded-2xl p-5">
             <p class="text-zinc-400 font-bold">Total apostado</p>
-            <p class="text-4xl font-black text-yellow-400">
+            <p class="text-2xl font-black text-yellow-400">
                 $<?= dinero($resumenHistorial['total_apostado'] ?? 0) ?>
             </p>
         </div>
 
         <div class="bg-zinc-900/90 border border-green-400/30 rounded-2xl p-5">
             <p class="text-zinc-400 font-bold">Total pagado</p>
-            <p class="text-4xl font-black text-green-400">
+            <p class="text-2xl font-black text-green-400">
                 $<?= dinero($resumenHistorial['total_pagado'] ?? 0) ?>
             </p>
         </div>
@@ -1100,7 +1100,7 @@ body {
 
             <?php $balanceGlobal = isset($resumenHistorial['balance_global']) ? (float) $resumenHistorial['balance_global'] : 0; ?>
 
-            <p class="text-4xl font-black <?= $balanceGlobal >= 0 ? 'text-green-400' : 'text-red-400' ?>">
+            <p class="text-2xl font-black <?= $balanceGlobal >= 0 ? 'text-green-400' : 'text-red-400' ?>">
                 <?= $balanceGlobal >= 0 ? '+' : '-' ?>$<?= dinero(abs($balanceGlobal)) ?>
             </p>
         </div>
